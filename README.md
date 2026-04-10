@@ -1,6 +1,7 @@
 # MessageMind 
 
 MessageMind is an interactive, frontend-heavy Next.js web application built to simulate production-scale AI CRM pipelines, ethical data tracking execution, and dynamic dataset visualization systems natively in the browser. 
+Live Link: https://messageemind.vercel.app/
 
 ## ✨ Key Features
 - **Dynamic Dataset Explorer:** Load, ingest, filter, and export `.csv` or `.json` payloads entirely locally. Features dynamic evaluation scores and smart multi-parameter filtering.
@@ -35,8 +36,5 @@ npm run dev
 # or
 yarn dev
 ```
-
-### 4. Launch Simulation
-Access the dashboard by navigating to [http://localhost:3000](http://localhost:3000) in your web browser. Interact with the **AI Assistant** using the Sparkles button in the top right, navigate to the **Dataset Explorer** to upload or drill into mocked data structures, and execute mock-marketing loops inside the **Chat Simulator**.
 
 Built natively on Next.js / TailwindCSS / Lucide-React / Framer Motion.
