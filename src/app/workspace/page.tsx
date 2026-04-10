@@ -14,7 +14,7 @@ export default function WorkspacePage() {
     <div className="pb-20 min-h-full flex flex-col">
       <div className="mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">AI Decision Workspace</h1>
+          <h1 className="text-2xl font-bold text-white tracking-tight">AI Design Engine</h1>
           <p className="text-sm text-zinc-400">Omnichannel resolution logic & explainability console</p>
         </div>
       </div>

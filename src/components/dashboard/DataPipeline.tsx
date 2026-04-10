@@ -1,14 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Database, Cpu, BrainCircuit, Split, Smartphone, BarChart3 } from "lucide-react";
+import { Database, Cpu, BrainCircuit, Split, Smartphone, BarChart3, Wand2 } from "lucide-react";
 
 import { useEffect, useState } from "react";
 
 const defaultNodes = [
   { id: "events", label: "Events", icon: Database, color: "text-blue-400", bg: "bg-blue-500/20", glow: "shadow-[0_0_15px_rgba(59,130,246,0.5)]", counter: "12.4k/s" },
   { id: "features", label: "Feature Engine", icon: Cpu, color: "text-indigo-400", bg: "bg-indigo-500/20", glow: "shadow-[0_0_15px_rgba(99,102,241,0.5)]", counter: "12.4k/s" },
-  { id: "brain", label: "AI Brain", icon: BrainCircuit, color: "text-purple-400", bg: "bg-purple-500/20", glow: "shadow-[0_0_25px_rgba(168,85,247,0.8)]", counter: "99.8% conf" },
+  { id: "brain", label: "Design Engine", icon: Wand2, color: "text-rose-400", bg: "bg-rose-500/20", glow: "shadow-[0_0_25px_rgba(244,63,94,0.8)]", counter: "99.8% conf" },
   { id: "decision", label: "Decision", icon: Split, color: "text-pink-400", bg: "bg-pink-500/20", glow: "shadow-[0_0_15px_rgba(236,72,153,0.5)]", counter: "10ms lat" },
   { id: "channels", label: "Channels", icon: Smartphone, color: "text-rose-400", bg: "bg-rose-500/20", glow: "shadow-[0_0_15px_rgba(244,63,94,0.5)]", counter: "3 active" },
   { id: "analytics", label: "Learning Loop", icon: BarChart3, color: "text-emerald-400", bg: "bg-emerald-500/20", glow: "shadow-[0_0_15px_rgba(16,185,129,0.5)]", counter: "Syncing" },
@@ -28,7 +28,7 @@ export function DataPipeline() {
            setNodes([
              { id: "events", label: "Customer Signal", icon: Database, color: "text-blue-400", bg: "bg-blue-500/20", glow: "shadow-[0_0_25px_rgba(59,130,246,0.8)]", counter: "Session Context" },
              { id: "features", label: "Feature Engine", icon: Cpu, color: "text-indigo-400", bg: "bg-indigo-500/20", glow: "shadow-[0_0_15px_rgba(99,102,241,0.5)]", counter: `${simData.intent}` },
-             { id: "brain", label: "AI Decision", icon: BrainCircuit, color: "text-purple-400", bg: "bg-purple-500/20", glow: "shadow-[0_0_25px_rgba(168,85,247,0.8)]", counter: "Upsell Path" },
+             { id: "brain", label: "Design Engine", icon: Wand2, color: "text-rose-400", bg: "bg-rose-500/20", glow: "shadow-[0_0_25px_rgba(244,63,94,0.8)]", counter: "Upsell Path" },
              { id: "decision", label: "Campaign", icon: Split, color: "text-pink-400", bg: "bg-pink-500/20", glow: "shadow-[0_0_15px_rgba(236,72,153,0.5)]", counter: "Personalized" },
              { id: "channels", label: "Response", icon: Smartphone, color: "text-rose-400", bg: "bg-rose-500/20", glow: "shadow-[0_0_25px_rgba(244,63,94,0.8)]", counter: simData.channel },
              { id: "analytics", label: "Learning Loop", icon: BarChart3, color: "text-emerald-400", bg: "bg-emerald-500/20", glow: "shadow-[0_0_30px_rgba(16,185,129,1)]", counter: `Eng: ${simData.engagement}%` },

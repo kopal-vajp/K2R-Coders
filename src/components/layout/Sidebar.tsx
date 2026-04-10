@@ -2,16 +2,17 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { 
-  LayoutDashboard, 
-  Database, 
-  BrainCircuit, 
-  MessageSquare, 
-  ShieldCheck, 
-  LineChart, 
+import {
+  LayoutDashboard,
+  Database,
+  BrainCircuit,
+  MessageSquare,
+  ShieldCheck,
+  LineChart,
   Settings,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Wand2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -20,7 +21,7 @@ import { usePathname } from "next/navigation";
 const navItems = [
   { name: "Dashboard", icon: LayoutDashboard, href: "/" },
   { name: "Dataset Explorer", icon: Database, href: "/datasets" },
-  { name: "AI Decision Engine", icon: BrainCircuit, href: "/workspace" },
+  { name: "AI Design Engine", icon: Wand2, href: "/workspace" },
   { name: "Chat Simulator", icon: MessageSquare, href: "/chat-simulator" },
   { name: "Privacy Governance", icon: ShieldCheck, href: "/privacy" },
   { name: "Growth Operations", icon: LineChart, href: "/analytics" },
@@ -41,9 +42,9 @@ export function Sidebar() {
       <div className={cn("flex h-16 shrink-0 items-center border-b border-white/5", isCollapsed ? "justify-center" : "justify-between px-4")}>
         {!isCollapsed ? (
           <>
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
               className="flex items-center gap-2"
             >
@@ -52,7 +53,7 @@ export function Sidebar() {
               </div>
               <span className="text-lg font-bold text-gradient tracking-tight">MessageMind</span>
             </motion.div>
-            <button 
+            <button
               onClick={() => setIsCollapsed(true)}
               className="flex h-7 w-7 items-center justify-center rounded-md text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             >
@@ -60,7 +61,7 @@ export function Sidebar() {
             </button>
           </>
         ) : (
-          <button 
+          <button
             onClick={() => setIsCollapsed(false)}
             className="group relative flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-600/20 hover:from-blue-500 hover:to-purple-600 transition-all cursor-pointer shadow-[0_0_10px_rgba(59,130,246,0.1)] hover:shadow-[0_0_15px_rgba(59,130,246,0.5)] border border-white/10 hover:border-transparent"
           >
@@ -78,8 +79,8 @@ export function Sidebar() {
               href={item.href}
               className={cn(
                 "group flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 relative overflow-hidden",
-                isActive 
-                  ? "text-white bg-white/10 shadow-[0_0_15px_rgba(59,130,246,0.1)]" 
+                isActive
+                  ? "text-white bg-white/10 shadow-[0_0_15px_rgba(59,130,246,0.1)]"
                   : "text-zinc-400 hover:text-white hover:bg-white/5"
               )}
             >
@@ -89,20 +90,20 @@ export function Sidebar() {
                   className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-blue-500 to-purple-500"
                 />
               )}
-              
+
               <div className="flex items-center justify-center w-6 mr-3 relative">
                 <item.icon className={cn(
-                  "h-5 w-5 transition-transform duration-200", 
+                  "h-5 w-5 transition-transform duration-200",
                   isActive ? "text-blue-400" : "group-hover:scale-110"
                 )} />
                 {isActive && (
                   <div className="absolute inset-0 bg-blue-500 blur-md opacity-40 rounded-full" />
                 )}
               </div>
-              
+
               {!isCollapsed && (
-                <motion.span 
-                  initial={{ opacity: 0 }} 
+                <motion.span
+                  initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   className="truncate"
                 >
@@ -113,7 +114,7 @@ export function Sidebar() {
           );
         })}
       </div>
-      
+
       <div className="p-4 border-t border-white/5">
         <div className={cn(
           "flex items-center gap-3 rounded-xl p-3 glass-panel-glow",

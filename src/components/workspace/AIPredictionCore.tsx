@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Persona } from "./mockPersonas";
-import { BrainCircuit, Zap, Target, TrendingDown } from "lucide-react";
+import { BrainCircuit, Zap, Target, TrendingDown, Wand2 } from "lucide-react";
 
 function RadialGauge({ value, label, color, icon: Icon }: { value: number, label: string, color: string, icon: any }) {
   const radius = 35;
@@ -91,8 +91,8 @@ export function AIPredictionCore({ persona }: { persona: Persona }) {
         className="glass-panel p-5 border border-white/5 flex flex-col items-center"
       >
         <div className="flex items-center gap-2 mb-6 w-full justify-center">
-          <BrainCircuit className="w-5 h-5 text-purple-400" />
-          <h2 className="text-base font-bold text-white uppercase tracking-wider">Prediction Engine</h2>
+          <Wand2 className="w-5 h-5 text-blue-400" />
+          <h2 className="text-base font-bold text-white uppercase tracking-wider">Design Engine</h2>
         </div>
         
         <div className="flex justify-around w-full">
