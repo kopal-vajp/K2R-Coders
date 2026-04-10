@@ -80,16 +80,7 @@ export function HeroSection() {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="relative z-10 text-center max-w-4xl px-4"
       >
-        <div className="flex items-center gap-3 mb-8">
-          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500 to-violet-600 shadow-[0_0_20px_rgba(244,63,94,0.4)] border border-white/10">
-            <Wand2 className="h-6 w-6 text-white" />
-            <div className="absolute inset-0 bg-white/20 rounded-xl mix-blend-overlay" />
-          </div>
-          <div className="flex flex-col items-start leading-none">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-rose-400 font-bold mb-1">Authenticated</span>
-            <span className="text-xl font-bold text-white tracking-tight">AI Design Engine</span>
-          </div>
-        </div>
+
         
         <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-tight">
           <span className="text-gradient">Real-Time Identity</span>
