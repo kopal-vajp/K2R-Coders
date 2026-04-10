@@ -38,35 +38,36 @@ export function Sidebar() {
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="h-full glass-panel border-r border-y-0 border-l-0 rounded-none z-20 sticky top-0 flex flex-col"
     >
-      <div className="flex h-16 shrink-0 items-center justify-between px-4 border-b border-white/5">
-        {!isCollapsed && (
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            transition={{ delay: 0.1 }}
-            className="flex items-center gap-2"
+      <div className={cn("flex h-16 shrink-0 items-center border-b border-white/5", isCollapsed ? "justify-center" : "justify-between px-4")}>
+        {!isCollapsed ? (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              transition={{ delay: 0.1 }}
+              className="flex items-center gap-2"
+            >
+              <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                <BrainCircuit className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-lg font-bold text-gradient tracking-tight">MessageMind</span>
+            </motion.div>
+            <button 
+              onClick={() => setIsCollapsed(true)}
+              className="flex h-7 w-7 items-center justify-center rounded-md text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+          </>
+        ) : (
+          <button 
+            onClick={() => setIsCollapsed(false)}
+            className="group relative flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-600/20 hover:from-blue-500 hover:to-purple-600 transition-all cursor-pointer shadow-[0_0_10px_rgba(59,130,246,0.1)] hover:shadow-[0_0_15px_rgba(59,130,246,0.5)] border border-white/10 hover:border-transparent"
           >
-            <div className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 shadow-[0_0_15px_rgba(59,130,246,0.5)]">
-              <BrainCircuit className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-lg font-bold text-gradient tracking-tight">MessageMind</span>
-          </motion.div>
-        )}
-        {isCollapsed && (
-          <div className="w-full flex justify-center">
-            <div className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 shadow-[0_0_10px_rgba(59,130,246,0.5)]">
-              <BrainCircuit className="h-5 w-5 text-white" />
-            </div>
-          </div>
+            <BrainCircuit className="h-5 w-5 text-zinc-400 group-hover:text-white transition-colors" />
+          </button>
         )}
       </div>
-
-      <button 
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute right-0 translate-x-[40%] md:translate-x-1/2 top-20 flex h-7 w-7 items-center justify-center rounded-full bg-zinc-900 border border-white/10 text-white hover:bg-white/10 transition-colors shadow-[0_0_15px_rgba(0,0,0,0.5)] z-50 cursor-pointer"
-      >
-        {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-      </button>
 
       <div className="flex flex-1 flex-col gap-1 px-3 py-4 overflow-y-auto">
         {navItems.map((item) => {

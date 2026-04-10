@@ -24,6 +24,25 @@ export default function PrivacyGovernancePage() {
     setToggles(prev => ({...prev, [key]: !prev[key]}));
   }
 
+  const handleDownloadCSV = () => {
+    const headers = ["Log ID", "Entity", "Action", "Explainability / Reason", "Timestamp"];
+    const csvRows = auditLogs.map(log => {
+      const action = `"${log.action.replace(/"/g, '""')}"`;
+      const reason = `"${log.reason.replace(/"/g, '""')}"`;
+      return `${log.id},${log.user},${action},${reason},${log.time}`;
+    });
+
+    const csvContent = [headers.join(","), ...csvRows].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `privacy_audit_logs_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="pb-20 min-h-full flex flex-col">
       <div className="mb-6 flex items-center justify-between">
@@ -126,7 +145,10 @@ export default function PrivacyGovernancePage() {
                 </h3>
                 <p className="text-xs text-zinc-400 mt-1">Log of all algorithmic blocks, overrides, and consent shifts.</p>
               </div>
-              <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-medium text-white transition-colors">
+              <button 
+                onClick={handleDownloadCSV}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-medium text-white transition-colors"
+              >
                 <FileText className="h-4 w-4" /> Download CSV
               </button>
             </div>

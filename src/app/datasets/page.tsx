@@ -374,7 +374,7 @@ export default function DatasetExplorerPage() {
                           type="text"
                           value={filterQuery}
                           onChange={(e) => setFilterQuery(e.target.value)}
-                          placeholder="Search Geo_IP, Price, etc..."
+                          placeholder="Search Geo_IP, Price, Last Open, Tier, etc..."
                           className="w-full h-full bg-black/40 border border-white/10 rounded-lg px-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50"
                         />
                       </motion.div>

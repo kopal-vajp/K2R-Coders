@@ -2,16 +2,17 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageSquare, Smartphone, Send, Settings, Check, CheckCheck, MoreVertical, Phone, Video, Globe, Database } from "lucide-react";
+import { MessageSquare, Smartphone, Send, Settings, Check, CheckCheck, MoreVertical, Phone, Video, Globe, Database, User, ChevronDown, Search, Sparkles, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Channel = "WhatsApp" | "SMS" | "Instagram";
 
 type Message = { id: number, type?: "system", sender?: "user" | "brand", text: string, time?: string, status?: string, cta?: string };
 
-const demoConversations: Record<string, { name: string; category: string; topic: string; channel: Channel; messages: Message[] }> = {
+const demoConversations: Record<string, { name: string; userId: string; category: string; topic: string; channel: Channel; messages: Message[] }> = {
   "Elena Markush": {
     name: "Elena Markush",
+    userId: "USR-8192",
     category: "Fitness",
     topic: "Fitness",
     channel: "WhatsApp",
@@ -24,6 +25,7 @@ const demoConversations: Record<string, { name: string; category: string; topic:
   },
   "Chloe Vance": {
     name: "Chloe Vance",
+    userId: "USR-4021",
     category: "Food Order",
     topic: "Food Order",
     channel: "SMS",
@@ -35,6 +37,7 @@ const demoConversations: Record<string, { name: string; category: string; topic:
   },
   "Samuel T.": {
     name: "Samuel T.",
+    userId: "USR-9934",
     category: "Travel",
     topic: "Travel",
     channel: "Instagram",
@@ -48,10 +51,35 @@ const demoConversations: Record<string, { name: string; category: string; topic:
 
 export default function ChatSimulatorPage() {
   const [selectedProfile, setSelectedProfile] = useState("Elena Markush");
-  const channel = demoConversations[selectedProfile]?.channel || "WhatsApp";
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [userSearchTerm, setUserSearchTerm] = useState("");
+  const profileDropdownRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node)) {
+        setProfileDropdownOpen(false);
+      }
+      if (deliveryDropdownRef.current && !deliveryDropdownRef.current.contains(event.target as Node)) {
+        setDeliveryDropdownOpen(false);
+      }
+      if (complianceDropdownRef.current && !complianceDropdownRef.current.contains(event.target as Node)) {
+        setComplianceDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filteredProfiles = Object.keys(demoConversations).filter(key => {
+    const term = userSearchTerm.toLowerCase();
+    return key.toLowerCase().includes(term) || demoConversations[key].userId.toLowerCase().includes(term);
+  });
+
+  const channel = demoConversations[selectedProfile]?.channel || "WhatsApp";
   // Pre-Chat Setup Hook
   const [escalation, setEscalation] = useState<number | null>(null);
+  const [showRecommendation, setShowRecommendation] = useState(false);
   
   // Playback state
   const [messages, setMessages] = useState<Message[]>([]);
@@ -97,7 +125,7 @@ export default function ChatSimulatorPage() {
     setInputValue("");
   };
 
-  const handlePrivacyDecision = (isPrivate: boolean) => {
+  const handlePrivacyDecision = (consentGiven: boolean) => {
     if (!pendingMessage) return;
 
     const userText = pendingMessage;
@@ -112,16 +140,16 @@ export default function ChatSimulatorPage() {
     setPendingMessage(null);
 
     // Record Choice
-    setPrivacyChoice(isPrivate);
+    setPrivacyChoice(consentGiven);
 
     // Simulate AI response based on Privacy Context
     setIsTyping(true);
     setTimeout(() => {
       setIsTyping(false);
       
-      const responseText = isPrivate 
-        ? "Your message will remain private and will not be used for personalization."
-        : "Your preferences have been saved. We will personalize future recommendations based on your input.";
+      const responseText = consentGiven 
+        ? "Got it! Your preferences have been saved. We will personalize future recommendations based on your input."
+        : "Your message will remain private and will not be used for personalization.";
 
       const finalAI: Message = { id: Date.now() + 1, sender: "brand", text: responseText, time: "Just now", status: "sent" };
 
@@ -129,7 +157,7 @@ export default function ChatSimulatorPage() {
       
       setSimulationEnded(true);
 
-      if (!isPrivate) {
+      if (consentGiven) {
         const payload = {
           fullConversation: [...snapshotVars, finalAI],
           channel: channel,
@@ -140,6 +168,9 @@ export default function ChatSimulatorPage() {
         };
         setStoredData(payload);
         localStorage.setItem("simulatorData", JSON.stringify(payload));
+        
+        // Trigger recommendation popup after 3 seconds
+        setTimeout(() => setShowRecommendation(true), 3000);
       } else {
         localStorage.setItem("simulatorData", JSON.stringify({ privacyRestricted: true }));
       }
@@ -149,11 +180,17 @@ export default function ChatSimulatorPage() {
 
   // Real-time states for Global intelligence layer features
   const [multiLanguage, setMultiLanguage] = useState(true);
-  const [timezoneAware, setTimezoneAware] = useState(true);
+  const [deliveryTiming, setDeliveryTiming] = useState("Timezone-Optimized");
+  const [deliveryDropdownOpen, setDeliveryDropdownOpen] = useState(false);
+  const deliveryDropdownRef = useRef<HTMLDivElement>(null);
+  
+  const [complianceMode, setComplianceMode] = useState("Auto-Enforce (GDPR)");
+  const [complianceDropdownOpen, setComplianceDropdownOpen] = useState(false);
+  const complianceDropdownRef = useRef<HTMLDivElement>(null);
+
   const [toneLocalization, setToneLocalization] = useState(true);
 
   const toggleMultiLanguage = () => setMultiLanguage(!multiLanguage);
-  const toggleTimezone = () => setTimezoneAware(!timezoneAware);
   const toggleTone = () => setToneLocalization(!toneLocalization);
 
   return (
@@ -186,23 +223,72 @@ export default function ChatSimulatorPage() {
 
           {/* Left Panel: Configuration */}
           <div className="flex flex-col gap-6">
-            <div className="glass-panel rounded-xl border border-white/5 p-6">
+            <div className="glass-panel rounded-xl border border-white/5 p-6 relative z-30">
               <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                 <Settings className="h-5 w-5 text-indigo-400" />
                 Simulation Parameters
               </h2>
               <div className="space-y-5">
-                <div>
+                <div className="relative" ref={profileDropdownRef}>
                   <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Identity Profile Channel</label>
-                  <select 
-                    value={selectedProfile}
-                    onChange={(e) => setSelectedProfile(e.target.value)}
-                    className="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-sm text-white focus:outline-none focus:border-indigo-500/50"
+                  <div 
+                    onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                    className="w-full bg-black/40 border border-white/10 rounded-lg py-2.5 px-3 text-sm text-white cursor-pointer hover:border-indigo-500/50 transition-colors flex justify-between items-center shadow-inner"
                   >
-                    {Object.keys(demoConversations).map(key => (
-                      <option key={key} value={key}>{key}</option>
-                    ))}
-                  </select>
+                    <div className="flex items-center gap-2">
+                       <div className="h-6 w-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
+                         <User className="h-3.5 w-3.5" />
+                       </div>
+                       <span className="font-medium">{selectedProfile}</span>
+                       <span className="text-zinc-500 text-xs ml-1">• {demoConversations[selectedProfile]?.channel}</span>
+                    </div>
+                    <ChevronDown className={cn("h-4 w-4 text-zinc-400 transition-transform", profileDropdownOpen && "rotate-180")} />
+                  </div>
+                  <AnimatePresence>
+                    {profileDropdownOpen && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.15 }}
+                        className="absolute w-full mt-2 bg-zinc-950 border border-white/10 rounded-xl overflow-hidden z-20 shadow-[0_8px_30px_rgb(0,0,0,0.5)]"
+                      >
+                        <div className="p-2 border-b border-white/10 relative">
+                          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                          <input 
+                            type="text" 
+                            placeholder="Search name or ID..." 
+                            value={userSearchTerm}
+                            onChange={(e) => setUserSearchTerm(e.target.value)}
+                            className="w-full bg-black/50 border border-white/10 rounded-lg py-1.5 pl-9 pr-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500/50"
+                          />
+                        </div>
+                        <div className="max-h-60 overflow-y-auto">
+                          {filteredProfiles.length > 0 ? (
+                            filteredProfiles.map(key => (
+                              <div 
+                                key={key} 
+                                onClick={() => { setSelectedProfile(key); setProfileDropdownOpen(false); setUserSearchTerm(""); }}
+                                className={cn(
+                                  "px-3 py-3 flex flex-col cursor-pointer transition-colors hover:bg-white/5",
+                                  selectedProfile === key ? "bg-indigo-500/10 border-l-2 border-indigo-500" : "border-l-2 border-transparent"
+                                )}
+                              >
+                                <div className="flex justify-between items-center">
+                                  <span className="text-sm font-semibold text-white">{key}</span>
+                                  <span className="text-[10px] uppercase font-bold text-indigo-400 tracking-wider bg-indigo-400/10 px-2 py-0.5 rounded border border-indigo-500/20">{demoConversations[key].channel}</span>
+                                </div>
+                                <span className="text-xs text-zinc-400 mt-1 line-clamp-1">
+                                  {demoConversations[key].topic} Flow <span className="text-zinc-600 ml-1 font-mono">{demoConversations[key].userId}</span>
+                                </span>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="py-6 text-center text-sm text-zinc-500">
+                              No matching users found
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
                 <div>
                   <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Escalation Threshold {!escalation && <span className="text-rose-400 ml-1">(Required to Chat)</span>}</label>
@@ -233,15 +319,74 @@ export default function ChatSimulatorPage() {
                     <div className="w-3 h-3 bg-white rounded-full"></div>
                   </div>
                 </div>
-                <div onClick={toggleTimezone} className="flex justify-between items-center bg-white/5 p-3 rounded-lg border border-white/5 cursor-pointer">
-                  <span className="text-xs text-white font-medium">Timezone-Aware Delivery</span>
-                  <div className={cn("h-4 w-8 rounded-full flex items-center px-1 transition-colors", timezoneAware ? "bg-emerald-500 justify-end" : "bg-zinc-600 justify-start")}>
-                    <div className="w-3 h-3 bg-white rounded-full"></div>
+                {/* Timing Operations Dropdown */}
+                <div className="relative" ref={deliveryDropdownRef}>
+                  <div
+                    onClick={() => {
+                      setDeliveryDropdownOpen(!deliveryDropdownOpen);
+                      setComplianceDropdownOpen(false);
+                    }}
+                    className="flex justify-between items-center bg-white/5 hover:bg-white/10 p-3 rounded-lg border border-white/5 cursor-pointer transition-colors"
+                  >
+                    <span className="text-xs text-white font-medium">Delivery Timing Ops</span>
+                    <div className="flex items-center gap-2">
+                       <span className="text-[10px] uppercase font-bold text-emerald-400 tracking-wider bg-emerald-400/10 px-2 py-0.5 rounded border border-emerald-500/20">{deliveryTiming}</span>
+                       <ChevronDown className={cn("h-3 w-3 text-zinc-400 transition-transform", deliveryDropdownOpen && "rotate-180")} />
+                    </div>
                   </div>
+                  <AnimatePresence>
+                    {deliveryDropdownOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.15 }}
+                        className="absolute w-full mt-2 bg-zinc-900 border border-white/10 rounded-xl overflow-hidden z-40 shadow-2xl"
+                      >
+                        {["Timezone-Optimized", "Immediate Bypass", "Batched Off-Peak"].map(opt => (
+                          <div
+                            key={opt}
+                            onClick={() => { setDeliveryTiming(opt); setDeliveryDropdownOpen(false); }}
+                            className="px-3 py-2.5 text-xs text-white hover:bg-emerald-500/10 hover:text-emerald-400 cursor-pointer transition-colors"
+                          >
+                            {opt}
+                          </div>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
-                <div className="flex justify-between items-center bg-white/5 p-3 rounded-lg border border-white/5">
-                  <span className="text-xs text-white font-medium">Regional Compliance / Consent</span>
-                  <select className="bg-black/60 text-xs text-white px-2 py-1 rounded border border-white/10 outline-none"><option>Auto-Enforce (GDPR/CCPA)</option><option>Manual Review</option></select>
+
+                {/* Regional Compliance Dropdown */}
+                <div className="relative" ref={complianceDropdownRef}>
+                  <div
+                    onClick={() => {
+                      setComplianceDropdownOpen(!complianceDropdownOpen);
+                      setDeliveryDropdownOpen(false);
+                    }}
+                    className="flex justify-between items-center bg-white/5 hover:bg-white/10 p-3 rounded-lg border border-white/5 cursor-pointer transition-colors"
+                  >
+                    <span className="text-xs text-white font-medium">Regional Compliance</span>
+                    <div className="flex items-center gap-2">
+                       <span className="text-[10px] uppercase font-bold text-blue-400 tracking-wider bg-blue-400/10 px-2 py-0.5 rounded border border-blue-500/20">{complianceMode}</span>
+                       <ChevronDown className={cn("h-3 w-3 text-zinc-400 transition-transform", complianceDropdownOpen && "rotate-180")} />
+                    </div>
+                  </div>
+                  <AnimatePresence>
+                    {complianceDropdownOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.15 }}
+                        className="absolute w-full mt-2 bg-zinc-900 border border-white/10 rounded-xl overflow-hidden z-30 shadow-2xl"
+                      >
+                        {["Auto-Enforce (GDPR)", "Auto-Enforce (CCPA)", "Manual Review", "Unrestricted"].map(opt => (
+                          <div
+                            key={opt}
+                            onClick={() => { setComplianceMode(opt); setComplianceDropdownOpen(false); }}
+                            className="px-3 py-2.5 text-xs text-white hover:bg-blue-500/10 hover:text-blue-400 cursor-pointer transition-colors"
+                          >
+                            {opt}
+                          </div>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
                 <div onClick={toggleTone} className="flex justify-between items-center bg-white/5 p-3 rounded-lg border border-white/5 cursor-pointer">
                   <span className="text-xs text-white font-medium">Tone Localization</span>
@@ -457,7 +602,7 @@ export default function ChatSimulatorPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="absolute inset-0 bg-black/60 z-50 backdrop-blur-sm flex items-center justify-center p-6"
+                  className="absolute inset-0 bg-black/60 z-[60] backdrop-blur-sm flex items-center justify-center p-6"
                 >
                   <motion.div 
                     initial={{ scale: 0.9, y: 20 }}
@@ -468,25 +613,55 @@ export default function ChatSimulatorPage() {
                     <div className="w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center mb-4 mx-auto">
                       <Settings className="w-6 h-6" />
                     </div>
-                    <h3 className="text-white text-base font-semibold text-center mb-2">Privacy Checkpoint</h3>
+                    <h3 className="text-white text-base font-semibold text-center mb-2">Consent Requested</h3>
                     <p className="text-sm text-zinc-400 text-center mb-6">
-                      Do you want to keep this message private? Your selection handles immediate CRM compliance parsing.
+                      Do you allow us to securely analyze this conversation to provide personalized recommendations?
                     </p>
                     <div className="flex gap-3">
                       <button 
                         onClick={() => handlePrivacyDecision(true)}
-                        className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium text-white transition-colors"
+                        className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-medium text-white transition-colors shadow-lg"
                       >
-                        YES (Private)
+                        YES (Use Data)
                       </button>
                       <button 
                         onClick={() => handlePrivacyDecision(false)}
-                        className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-medium text-white transition-colors"
+                        className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium text-white transition-colors"
                       >
-                        NO (Use Data)
+                        NO (Keep Private)
                       </button>
                     </div>
                   </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+              {showRecommendation && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 20, scale: 0.9 }}
+                  className="absolute bottom-20 left-4 right-4 z-50 bg-[#0a0a0a]/95 backdrop-blur-xl border border-indigo-500/30 shadow-[0_8px_30px_rgb(0,0,0,0.5)] rounded-2xl p-4 overflow-hidden"
+                >
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-purple-500" />
+                  <div className="flex gap-3 items-start relative mt-1">
+                    <div className="h-10 w-10 shrink-0 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 border border-indigo-500/20">
+                      <Sparkles className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-white text-sm font-bold flex justify-between items-center">
+                        AI Recommendation
+                        <button onClick={() => setShowRecommendation(false)} className="text-zinc-500 hover:text-white transition-colors"><X className="h-4 w-4" /></button>
+                      </h4>
+                      <p className="text-xs text-zinc-300 mt-1 leading-relaxed">
+                        Based on your interest in <strong>{demoConversations[selectedProfile]?.topic || "this topic"}</strong>, we've unlocked a personalized offer for you.
+                      </p>
+                      <button className="w-full mt-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg shadow-md transition-colors">
+                        View Offer Spotlight
+                      </button>
+                    </div>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -496,7 +671,7 @@ export default function ChatSimulatorPage() {
 
       </div>
 
-      {simulationEnded && privacyChoice === false && (
+      {simulationEnded && privacyChoice === true && (
         <div className="w-full max-w-5xl mx-auto mt-12 glass-panel rounded-xl border border-white/5 p-8 transition-all duration-500 animate-in fade-in slide-in-from-bottom-8">
            <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
               <Database className="h-5 w-5 text-indigo-400" />
