@@ -1,4 +1,4 @@
-# MessageMind ADA Enterprise Simulator
+# MessageMind 
 
 MessageMind is an interactive, frontend-heavy Next.js web application built to simulate production-scale AI CRM pipelines, ethical data tracking execution, and dynamic dataset visualization systems natively in the browser. 
 
