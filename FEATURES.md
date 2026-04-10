@@ -14,7 +14,7 @@ The Dataset Explorer forms the backbone of data ingestion, providing structural 
 * **Underlying Logic:** Executing deletion forces adjacent UI models and tables to hot-swap backward or forward to another active dataset cleanly.
 
 ### 1.3 Client-Side Searching & CSV Exporting
-* **Functionality:** The active structural extraction table boasts a real-time `Filter` engine to cross-reference sub-strings instantly and a dedicated `Export` command.
+* **Functionality:** The active structural extraction table boasts a real-time `Filter` engine to cross-reference sub-strings instantly (e.g., searching by specific data schemas like `Tier` routing or `Last_Open` durations).
 * **Underlying Logic:** Complex queries execute locally. Activating the `Export` command wraps the current *filtered* state array inside an invisible Blob memory construct, synthesizes a functional CSV matrix footprint, automatically constructs an internal `a.href` browser hook, and executes a local machine download event instantly securely without API roundtrips.
 
 ### 1.4 Data Quality Scoring Metrics
@@ -48,3 +48,17 @@ The primary landing dashboard functions as a passive aggregation layer, directly
 ### 3.2 Dynamic Conditional Modularity
 * **Functionality:** Performance UI blocks are no longer static designs. 
 * **Underlying Logic:** If the Simulator was blocked due to a `YES (Private)` constraint, the underlying Analytics module locks the screen explicitly dropping a red `Execution Halted` container explaining compliant isolation rules. If tracking was successfully approved, the Dashboard displays an exclusive *Impact from Current Session* frame computing localized metrics natively.
+
+## 4. Privacy Governance Audit Trails
+Demonstrates algorithmic transparency and compliance automation securely handled entirely on the client side.
+
+### 4.1 Native CSV Export Engine
+* **Functionality:** Users can export the decision audit trail directly through an integrated CSV download module.
+* **Underlying Logic:** Evaluates active consent variables mapping them cleanly to functional comma-separated schemas, stripping illegal characters natively, and forcing an immediate client-side Blob generation for secure offline compliance evaluation.
+
+## 5. AI Assistant Operations Console (Persistent Agent)
+Simulates an asynchronous GenAI contextual support interface overlaid natively above global navigational hierarchies.
+
+### 5.1 Slide-Out Help Agent
+* **Functionality:** Clicking the `Sparkles` indicator on the top command bar mounts a high-fidelity interaction sidebar simulating responsive chat capabilities. 
+* **Underlying Logic:** Fused directly into the global shell rendering tree powered by Framer Motion, it houses a state array that listens to cascading user responses and sequentially fires delayed promises replicating GenAI stream delays and routing complex inputs functionally to fallback pipelines securely.
