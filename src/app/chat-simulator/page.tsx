@@ -1,63 +1,182 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageSquare, Smartphone, Send, Settings, Check, CheckCheck, MoreVertical, Phone, Video } from "lucide-react";
+import { MessageSquare, Smartphone, Send, Settings, Check, CheckCheck, MoreVertical, Phone, Video, Globe, Database } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Channel = "WhatsApp" | "SMS" | "Instagram";
 
+type Message = { id: number, type?: "system", sender?: "user" | "brand", text: string, time?: string, status?: string, cta?: string };
+
+const demoConversations: Record<string, { name: string; category: string; topic: string; channel: Channel; messages: Message[] }> = {
+  "Elena Markush": {
+    name: "Elena Markush",
+    category: "Fitness",
+    topic: "Fitness",
+    channel: "WhatsApp",
+    messages: [
+      { id: 1, type: "system", text: "Today 8:00 AM" },
+      { id: 2, sender: "brand", text: "Ready to crush your goals this week? 💪 Your personalized workout plan is ready.", time: "8:00 AM", status: "read" },
+      { id: 3, sender: "user", text: "Yes! But my knee is a bit sore today.", time: "8:05 AM" },
+      { id: 4, sender: "brand", text: "Got it. I've adjusted your plan to feature an upper-body focus and active recovery.", time: "8:06 AM", status: "delivered", cta: "View Updated Plan" }
+    ]
+  },
+  "Chloe Vance": {
+    name: "Chloe Vance",
+    category: "Food Order",
+    topic: "Food Order",
+    channel: "SMS",
+    messages: [
+      { id: 1, type: "system", text: "Yesterday 7:15 PM" },
+      { id: 2, sender: "user", text: "I want to reorder my usual Friday night sushi, but add spicy mayo this time.", time: "7:15 PM" },
+      { id: 3, sender: "brand", text: "Done! I've added spicy mayo to your Sakura Sushi cart. The total is $28.50. Shall I place the order?", time: "7:16 PM", status: "delivered", cta: "Confirm Order" }
+    ]
+  },
+  "Samuel T.": {
+    name: "Samuel T.",
+    category: "Travel",
+    topic: "Travel",
+    channel: "Instagram",
+    messages: [
+      { id: 1, type: "system", text: "Today 9:10 AM" },
+      { id: 2, sender: "user", text: "I'm looking for a weekend getaway from NYC. Somewhere outdoors but close.", time: "9:10 AM" },
+      { id: 3, sender: "brand", text: "Check out these cabins in the Catskills! Just a 2-hour drive, hiking trails nearby, and currently 15% off for this weekend.", time: "9:11 AM", status: "delivered", cta: "View Cabins" }
+    ]
+  }
+};
+
 export default function ChatSimulatorPage() {
-  const [channel, setChannel] = useState<Channel>("WhatsApp");
+  const [selectedProfile, setSelectedProfile] = useState("Elena Markush");
+  const channel = demoConversations[selectedProfile]?.channel || "WhatsApp";
+
+  // Pre-Chat Setup Hook
+  const [escalation, setEscalation] = useState<number | null>(null);
+  
+  // Playback state
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
-  const [messages, setMessages] = useState([
-    { id: 1, type: "system", text: "Today 10:41 AM" },
-    { id: 2, sender: "brand", text: "Hi Elena! We noticed you left the HyperKnit Soles in your cart. Still interested?", time: "10:41 AM", status: "read" },
-    { id: 3, sender: "user", text: "Yes, but I was wondering about the shipping time to NY?", time: "10:45 AM" },
-    { id: 4, sender: "brand", text: "Standard shipping to New York takes 2-3 business days. If you order in the next hour, we'll upgrade you to overnight shipping for free!", time: "10:46 AM", status: "delivered", cta: "Claim Free Overnight Shipping" }
-  ]);
   const [inputValue, setInputValue] = useState("");
 
-  const handleSend = () => {
-    if (!inputValue.trim()) return;
+  // Privacy Logic Hooks
+  const [pendingMessage, setPendingMessage] = useState<string | null>(null);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  
+  // Post-Simulation Analysis Hooks
+  const [simulationEnded, setSimulationEnded] = useState(false);
+  const [privacyChoice, setPrivacyChoice] = useState<boolean | null>(null);
+  const [storedData, setStoredData] = useState<any>(null);
 
-    // Add user message
-    const newMsg = { id: Date.now(), sender: "user", text: inputValue, time: "Just now" };
-    setMessages([...messages, newMsg]);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isTyping]);
+
+  // Restart playback when profile changes
+  useEffect(() => {
+    setMessages([]);
+    setIsTyping(false);
     setInputValue("");
+    setSimulationEnded(false);
+    setPrivacyChoice(null);
+    setStoredData(null);
+  }, [selectedProfile]);
 
-    // Simulate AI typing and response
+  // Initialize messages instantly without playback loop for simplicity to support privacy logic mapping
+  useEffect(() => {
+    const convo = demoConversations[selectedProfile]?.messages || [];
+    setMessages([...convo]);
+  }, [selectedProfile]);
+
+  const handleSend = () => {
+    if (!inputValue.trim() || escalation === null) return;
+    setPendingMessage(inputValue);
+    setShowPrivacyModal(true);
+    setInputValue("");
+  };
+
+  const handlePrivacyDecision = (isPrivate: boolean) => {
+    if (!pendingMessage) return;
+
+    const userText = pendingMessage;
+    // Add user message
+    const newMsg: Message = { id: Date.now(), sender: "user", text: userText, time: "Just now" };
+    
+    // We update local snap for analytics logging synchronously
+    const snapshotVars = [...messages, newMsg];
+    
+    setMessages(prev => [...prev, newMsg]);
+    setShowPrivacyModal(false);
+    setPendingMessage(null);
+
+    // Record Choice
+    setPrivacyChoice(isPrivate);
+
+    // Simulate AI response based on Privacy Context
     setIsTyping(true);
     setTimeout(() => {
       setIsTyping(false);
-      setMessages(prev => [
-        ...prev,
-        { id: Date.now() + 1, sender: "brand", text: "Thanks! Let me connect you with a live agent to finalize your expedited order.", time: "Just now", status: "sent" }
-      ]);
-    }, 2000);
+      
+      const responseText = isPrivate 
+        ? "Your message will remain private and will not be used for personalization."
+        : "Your preferences have been saved. We will personalize future recommendations based on your input.";
+
+      const finalAI: Message = { id: Date.now() + 1, sender: "brand", text: responseText, time: "Just now", status: "sent" };
+
+      setMessages(prev => [...prev, finalAI]);
+      
+      setSimulationEnded(true);
+
+      if (!isPrivate) {
+        const payload = {
+          fullConversation: [...snapshotVars, finalAI],
+          channel: channel,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          intent: demoConversations[selectedProfile].category,
+          engagement: Math.floor(Math.random() * 15 + 85), // Random 85-99%
+          privacyRestricted: false
+        };
+        setStoredData(payload);
+        localStorage.setItem("simulatorData", JSON.stringify(payload));
+      } else {
+        localStorage.setItem("simulatorData", JSON.stringify({ privacyRestricted: true }));
+      }
+
+    }, 1500);
   };
+
+  // Real-time states for Global intelligence layer features
+  const [multiLanguage, setMultiLanguage] = useState(true);
+  const [timezoneAware, setTimezoneAware] = useState(true);
+  const [toneLocalization, setToneLocalization] = useState(true);
+
+  const toggleMultiLanguage = () => setMultiLanguage(!multiLanguage);
+  const toggleTimezone = () => setTimezoneAware(!timezoneAware);
+  const toggleTone = () => setToneLocalization(!toneLocalization);
 
   return (
     <div className="pb-20 min-h-full flex flex-col">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Omnichannel Simulator</h1>
-          <p className="text-sm text-zinc-400">Test and preview AI-generated dialogues across native device interfaces.</p>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Cross-Channel Identity Orchestration</h1>
+          <p className="text-sm text-zinc-400">Test and preview AI-generated dialogues across native device interfaces with persistent identity.</p>
         </div>
 
         <div className="flex bg-black/40 p-1 rounded-xl border border-white/10 backdrop-blur-md shadow-lg">
-          {(["WhatsApp", "SMS", "Instagram"] as Channel[]).map((c) => (
+          {Object.keys(demoConversations).map((c) => (
             <button
               key={c}
-              onClick={() => setChannel(c)}
+              onClick={() => setSelectedProfile(c)}
               className={cn(
                 "px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
-                channel === c
+                selectedProfile === c
                   ? "bg-white/10 text-white shadow-md"
                   : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
               )}
             >
-              {c}
+              {demoConversations[c].channel}
             </button>
           ))}
         </div>
@@ -74,31 +193,65 @@ export default function ChatSimulatorPage() {
               </h2>
               <div className="space-y-5">
                 <div>
-                  <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Target Persona</label>
-                  <select className="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-sm text-white focus:outline-none focus:border-indigo-500/50">
-                    <option>Elena Markush (Hesitant Buyer)</option>
-                    <option>Chloe Vance (Platinum VIP)</option>
-                    <option>Samuel T. (Discount Seeker)</option>
+                  <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Identity Profile Channel</label>
+                  <select 
+                    value={selectedProfile}
+                    onChange={(e) => setSelectedProfile(e.target.value)}
+                    className="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-sm text-white focus:outline-none focus:border-indigo-500/50"
+                  >
+                    {Object.keys(demoConversations).map(key => (
+                      <option key={key} value={key}>{key}</option>
+                    ))}
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Escalation Threshold</label>
+                  <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Escalation Threshold {!escalation && <span className="text-rose-400 ml-1">(Required to Chat)</span>}</label>
                   <div className="flex items-center gap-4">
-                    <input type="range" min="0" max="100" defaultValue="85" className="flex-1 accent-indigo-500" />
-                    <span className="text-sm font-mono text-indigo-400">85%</span>
+                    <input 
+                      type="range" min="0" max="100" 
+                      value={escalation ?? 0}
+                      onChange={(e) => setEscalation(parseInt(e.target.value))}
+                      className="flex-1 accent-indigo-500" 
+                    />
+                    <span className="text-sm font-mono text-indigo-400">{escalation !== null ? escalation + '%' : 'N/A'}</span>
                   </div>
-                  <p className="text-xs text-zinc-500 mt-1">AI hands off to human agent if frustration detected over 85%.</p>
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Dynamic Variables Passed</label>
-                  <div className="flex flex-wrap gap-2">
-                    <span className="px-2 py-1 text-xs bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 rounded">cart_abandon_time: 2h</span>
-                    <span className="px-2 py-1 text-xs bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 rounded">location: NY</span>
-                    <span className="px-2 py-1 text-xs bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 rounded">loyalty_tier: Silver</span>
-                  </div>
+                  <p className="text-xs text-zinc-500 mt-1">Chat simulator will be disabled until an escalation limit is explicitly defined for the flow.</p>
                 </div>
               </div>
             </div>
+
+            {/* Global Intelligence Layer */}
+            <div className="glass-panel rounded-xl border border-white/5 p-6 mt-2">
+              <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <Globe className="h-5 w-5 text-emerald-400" />
+                Global Intelligence Layer
+              </h2>
+              <div className="space-y-4">
+                <div onClick={toggleMultiLanguage} className="flex justify-between items-center bg-white/5 p-3 rounded-lg border border-white/5 cursor-pointer">
+                  <span className="text-xs text-white font-medium">Multi-Language Messaging</span>
+                  <div className={cn("h-4 w-8 rounded-full flex items-center px-1 transition-colors", multiLanguage ? "bg-emerald-500 justify-end" : "bg-zinc-600 justify-start")}>
+                    <div className="w-3 h-3 bg-white rounded-full"></div>
+                  </div>
+                </div>
+                <div onClick={toggleTimezone} className="flex justify-between items-center bg-white/5 p-3 rounded-lg border border-white/5 cursor-pointer">
+                  <span className="text-xs text-white font-medium">Timezone-Aware Delivery</span>
+                  <div className={cn("h-4 w-8 rounded-full flex items-center px-1 transition-colors", timezoneAware ? "bg-emerald-500 justify-end" : "bg-zinc-600 justify-start")}>
+                    <div className="w-3 h-3 bg-white rounded-full"></div>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center bg-white/5 p-3 rounded-lg border border-white/5">
+                  <span className="text-xs text-white font-medium">Regional Compliance / Consent</span>
+                  <select className="bg-black/60 text-xs text-white px-2 py-1 rounded border border-white/10 outline-none"><option>Auto-Enforce (GDPR/CCPA)</option><option>Manual Review</option></select>
+                </div>
+                <div onClick={toggleTone} className="flex justify-between items-center bg-white/5 p-3 rounded-lg border border-white/5 cursor-pointer">
+                  <span className="text-xs text-white font-medium">Tone Localization</span>
+                  <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded", toneLocalization ? "text-emerald-400 bg-emerald-500/10" : "text-zinc-400 bg-zinc-600/20")}>
+                    {toneLocalization ? "ACTIVE" : "INACTIVE"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
           </div>
 
           {/* Right Panel: Phone Frame Mockup */}
@@ -108,27 +261,62 @@ export default function ChatSimulatorPage() {
               {/* Fake Notch */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-zinc-800 rounded-b-2xl z-20" />
 
-              {/* App Header (WhatsApp styling for demo) */}
+              {/* App Header */}
               <div className={cn(
-                "pt-10 pb-3 px-4 flex items-center justify-between z-10 shrink-0",
-                channel === "WhatsApp" ? "bg-[#075E54] text-white" :
-                  channel === "SMS" ? "bg-zinc-900 text-white border-b border-white/10" :
-                    "bg-black text-white border-b border-white/10"
+                "pt-10 pb-3 px-4 flex items-center justify-between z-10 shrink-0 border-b",
+                channel === "WhatsApp" ? "bg-[#075E54] text-white border-[#075E54]" :
+                  channel === "SMS" ? "bg-[#1C1C1E] text-white border-white/10" :
+                    "bg-black text-white border-white/10"
               )}>
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center overflow-hidden">
-                    {channel === "Instagram" ? <img src="https://i.pravatar.cc/100?u=brand" alt="Brand" className="w-full h-full object-cover" /> : "NI"}
+                {channel === "WhatsApp" && (
+                  <>
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center overflow-hidden">
+                        <img src="https://i.pravatar.cc/100?u=brand" alt="Brand" className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-semibold">AI Assistant</span>
+                        <span className="text-[10px] text-white/70">Online</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 text-white/80">
+                      <Video className="h-5 w-5" />
+                      <Phone className="h-4 w-4" />
+                      <MoreVertical className="h-5 w-5" />
+                    </div>
+                  </>
+                )}
+                {channel === "SMS" && (
+                  <div className="flex w-full items-center justify-between pt-2">
+                    <div className="text-blue-500 flex items-center gap-1">
+                      <span className="pr-1 text-2xl -mt-1 leading-none shadow-none text-blue-500 rounded-none bg-transparent">‹</span>
+                    </div>
+                    <div className="flex flex-col items-center flex-1">
+                      <div className="h-6 w-6 rounded-full bg-zinc-600 flex items-center justify-center text-[10px] text-white font-semibold">AI</div>
+                      <span className="text-xs font-semibold mt-1">Assistant </span>
+                    </div>
+                    <div className="text-sm text-blue-500">&nbsp;</div> {/* Spacer */}
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-semibold">Nike Store</span>
-                    {channel === "WhatsApp" && <span className="text-[10px] text-white/70">Online</span>}
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 text-white/80">
-                  <Video className="h-5 w-5" />
-                  <Phone className="h-4 w-4" />
-                  <MoreVertical className="h-5 w-5" />
-                </div>
+                )}
+                {channel === "Instagram" && (
+                  <>
+                    <div className="flex items-center gap-3 w-full justify-between">
+                      <div className="text-white text-xl">‹</div>
+                      <div className="flex items-center gap-2">
+                        <div className="h-7 w-7 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-500 p-[1.5px]">
+                          <div className="h-full w-full bg-black rounded-full overflow-hidden border border-black">
+                            <img src="https://i.pravatar.cc/100?u=brand" alt="Brand" className="w-full h-full object-cover" />
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-start leading-tight">
+                          <span className="text-[13px] font-bold">brand_ai</span>
+                          <span className="text-[10px] text-white/60">Official</span>
+                        </div>
+                      </div>
+                      <Globe className="h-6 w-6 text-white" />
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Chat Body */}
@@ -145,8 +333,8 @@ export default function ChatSimulatorPage() {
                   {messages.map((msg, idx) => {
                     if (msg.type === "system") {
                       return (
-                        <div key={idx} className="flex justify-center my-2 relative z-10">
-                          <span className="bg-black/20 text-white/70 text-[10px] px-3 py-1 rounded-lg backdrop-blur-sm">
+                        <div key={`msg-`+idx} className="flex justify-center my-2 relative z-10 w-full shrink-0">
+                          <span className="bg-zinc-800/90 text-white/90 text-[10px] font-medium px-3 py-1 rounded-lg backdrop-blur-md shadow-sm border border-white/10">
                             {msg.text}
                           </span>
                         </div>
@@ -156,34 +344,45 @@ export default function ChatSimulatorPage() {
                     const isBrand = msg.sender === "brand";
                     return (
                       <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        key={msg.id}
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        key={`msg-`+idx}
                         className={cn(
-                          "relative z-10 max-w-[80%] flex flex-col",
+                          "relative z-10 max-w-[80%] flex flex-col shrink-0",
                           isBrand ? "self-start" : "self-end"
                         )}
                       >
                         <div className={cn(
-                          "px-3 py-2 rounded-xl text-[13px] shadow-sm relative",
+                          "px-3 py-2 text-[13px] relative w-auto max-w-full shadow-lg",
+                           channel === "WhatsApp" ? "rounded-xl shadow-sm" : channel === "SMS" ? "rounded-2xl" : "rounded-3xl px-4 py-2.5",
                           isBrand
-                            ? channel === "WhatsApp" ? "bg-white text-black rounded-tl-sm" : channel === "SMS" ? "bg-zinc-800 text-white" : "bg-zinc-900 border border-white/10 text-white"
-                            : channel === "WhatsApp" ? "bg-[#DCF8C6] text-black rounded-tr-sm" : channel === "SMS" ? "bg-blue-500 text-white" : "bg-blue-600 text-white"
+                            ? channel === "WhatsApp" ? "bg-white text-black rounded-tl-sm" : channel === "SMS" ? "bg-[#262628] text-white" : "bg-[#262626] text-white"
+                            : channel === "WhatsApp" ? "bg-[#DCF8C6] text-black rounded-tr-sm" : channel === "SMS" ? "bg-[#0A84FF] text-white" : "bg-gradient-to-r from-purple-500 to-indigo-500 text-white"
                         )}>
-                          {msg.text}
+                          <span>{msg.text}</span>
 
-                          <div className={cn(
-                            "flex items-center justify-end gap-1 mt-1",
-                            isBrand && channel === "WhatsApp" ? "text-zinc-400" : "text-white/60"
-                          )}>
-                            <span className="text-[9px]">{msg.time}</span>
-                            {isBrand && msg.status && (
-                              msg.status === "read" ? <CheckCheck className="h-3 w-3 text-blue-500" /> :
-                                msg.status === "delivered" ? <CheckCheck className="h-3 w-3" /> :
-                                  <Check className="h-3 w-3" />
-                            )}
-                          </div>
+                          {channel === "WhatsApp" && (
+                            <div className={cn(
+                              "flex items-center justify-end gap-1 mt-1",
+                              isBrand ? "text-zinc-400" : "text-emerald-700/60"
+                            )}>
+                              <span className="text-[9px]">{msg.time}</span>
+                              {isBrand && msg.status && (
+                                msg.status === "read" ? <CheckCheck className="h-3 w-3 text-blue-500" /> :
+                                  msg.status === "delivered" ? <CheckCheck className="h-3 w-3" /> :
+                                    <Check className="h-3 w-3" />
+                              )}
+                            </div>
+                          )}
                         </div>
+
+                        {channel === "SMS" && (
+                            <div className={cn("text-[9px] text-zinc-500 mt-1", isBrand ? "ml-2" : "mr-2 text-right")}>{msg.time}</div>
+                        )}
+
+                        {channel === "Instagram" && idx === messages.length - 1 && (
+                            <div className={cn("text-[9px] text-zinc-500 mt-1", isBrand ? "ml-2" : "mr-2 text-right")}>Seen {msg.time}</div>
+                        )}
 
                         {/* CTA Mockup */}
                         {msg.cta && (
@@ -200,7 +399,7 @@ export default function ChatSimulatorPage() {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}
-                      className="self-start bg-zinc-800 rounded-full px-4 py-2 mt-2"
+                      className="self-start bg-zinc-800 rounded-full px-4 py-2 mt-2 shrink-0 shadow-lg relative z-10"
                     >
                       <div className="flex gap-1">
                         <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
@@ -210,33 +409,165 @@ export default function ChatSimulatorPage() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-
+                <div ref={messagesEndRef} className="shrink-0 h-1 w-full" />
               </div>
 
               {/* Input Area */}
-              <div className="shrink-0 bg-zinc-900 p-3 pt-2">
-                <div className="flex items-center gap-2 bg-black rounded-full px-4 py-2 border border-white/10">
+              <div className={cn(
+                "shrink-0 p-3 pt-2 border-t z-20 transition-all",
+                escalation === null ? "opacity-50 pointer-events-none grayscale" : "opacity-100",
+                channel === "WhatsApp" ? "bg-[#1e2428] border-white/5" :
+                  channel === "SMS" ? "bg-[#1C1C1E] border-white/10" :
+                    "bg-black border-white/10"
+              )}>
+                <div className={cn(
+                  "flex items-center gap-2 rounded-full px-4 py-2 border",
+                  channel === "WhatsApp" ? "bg-[#2A2F32] border-transparent" :
+                    channel === "SMS" ? "bg-black border-zinc-700" :
+                      "bg-zinc-900 border-zinc-800"
+                )}>
+                  {channel === "Instagram" && (
+                    <div className="bg-blue-500 rounded-full h-7 w-7 text-white flex items-center justify-center text-lg shrink-0">+</div>
+                  )}
                   <input
                     type="text"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                    placeholder="Type a message..."
-                    className="flex-1 bg-transparent text-sm text-white placeholder-zinc-500 focus:outline-none"
+                    placeholder={channel === "Instagram" ? "Message..." : channel === "SMS" ? "iMessage" : "Type a message"}
+                    className="flex-1 bg-transparent text-[13px] text-white placeholder-zinc-500 focus:outline-none placeholder:text-zinc-500/80"
                   />
-                  <button
-                    onClick={handleSend}
-                    className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white shrink-0 hover:bg-blue-600 transition-colors"
-                  >
-                    <Send className="h-4 w-4" />
-                  </button>
+                  {inputValue.trim() ? (
+                    <button
+                      onClick={handleSend}
+                      className={cn(
+                        "h-7 w-7 rounded-full flex items-center justify-center text-white shrink-0 transition-colors",
+                         channel === "WhatsApp" ? "bg-[#00A884]" : channel === "SMS" ? "bg-[#0A84FF]" : "bg-gradient-to-tr from-purple-500 to-indigo-500"
+                      )}
+                    >
+                      {channel === "SMS" ? <span className="transform -rotate-90 text-[10px]">&uarr;</span> : <Send className="h-3 w-3 -ml-[1px]" />}
+                    </button>
+                  ) : null}
                 </div>
               </div>
+
+            <AnimatePresence>
+              {showPrivacyModal && (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 bg-black/60 z-50 backdrop-blur-sm flex items-center justify-center p-6"
+                >
+                  <motion.div 
+                    initial={{ scale: 0.9, y: 20 }}
+                    animate={{ scale: 1, y: 0 }}
+                    exit={{ scale: 0.9, y: 20 }}
+                    className="bg-zinc-900 border border-white/10 rounded-2xl p-6 shadow-2xl w-full"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center mb-4 mx-auto">
+                      <Settings className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-white text-base font-semibold text-center mb-2">Privacy Checkpoint</h3>
+                    <p className="text-sm text-zinc-400 text-center mb-6">
+                      Do you want to keep this message private? Your selection handles immediate CRM compliance parsing.
+                    </p>
+                    <div className="flex gap-3">
+                      <button 
+                        onClick={() => handlePrivacyDecision(true)}
+                        className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium text-white transition-colors"
+                      >
+                        YES (Private)
+                      </button>
+                      <button 
+                        onClick={() => handlePrivacyDecision(false)}
+                        className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-medium text-white transition-colors"
+                      >
+                        NO (Use Data)
+                      </button>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             </div>
           </div>
 
       </div>
+
+      {simulationEnded && privacyChoice === false && (
+        <div className="w-full max-w-5xl mx-auto mt-12 glass-panel rounded-xl border border-white/5 p-8 transition-all duration-500 animate-in fade-in slide-in-from-bottom-8">
+           <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+              <Database className="h-5 w-5 text-indigo-400" />
+              Post-Simulation Analysis Pipeline
+           </h2>
+           
+           <div className="flex flex-col gap-8">
+               <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-4 rounded-xl text-sm font-medium flex items-center gap-2">
+                   <CheckCheck className="h-5 w-5" />
+                   Conversation Stored Successfully. Full Conversation Captured. Consent Explicit.
+               </div>
+               
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                   {/* Conversation Log */}
+                   <div className="bg-black/40 border border-white/5 rounded-xl p-6 shadow-inner h-[400px] overflow-y-auto custom-scrollbar">
+                      <h3 className="text-white text-sm font-bold tracking-wide uppercase mb-4 opacity-80 sticky top-0 bg-black/80 backdrop-blur-md pb-2 z-10">Structured Extraction Log</h3>
+                      <div className="space-y-3 text-sm font-mono mt-2">
+                          <div className="flex justify-between items-center"><span className="text-zinc-500">Pipeline Origin:</span><span className="text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded">{storedData?.channel}</span></div>
+                          <div className="flex justify-between items-center"><span className="text-zinc-500">Sync Timestamp:</span><span className="text-zinc-300">{storedData?.timestamp}</span></div>
+                          <div className="flex justify-between items-center"><span className="text-zinc-500">Classified Intent:</span><span className="text-blue-400">{storedData?.intent}</span></div>
+                          <div className="mt-6 pt-4 border-t border-white/5">
+                              <span className="text-zinc-500 block mb-4 text-xs font-bold uppercase tracking-widest">Full Conversation Captured:</span>
+                              
+                              <div className="space-y-4">
+                                {storedData?.fullConversation.map((msg: Message, idx: number) => {
+                                  if (msg.type === "system" || !msg.sender) return null;
+                                  return (
+                                    <div key={idx} className="bg-white/5 p-3 rounded-lg border border-white/5">
+                                      <span className={cn("text-[10px] font-bold uppercase tracking-wider mb-1 block", msg.sender === "user" ? "text-blue-400" : "text-emerald-400")}>
+                                        {msg.sender === "user" ? "USER" : "SYSTEM"}
+                                      </span>
+                                      <div className="text-zinc-300 text-xs leading-relaxed">"{msg.text}"</div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                          </div>
+                      </div>
+                   </div>
+
+                   {/* Analytics Panel */}
+                   <div className="bg-black/40 border border-white/5 rounded-xl p-6 shadow-inner space-y-6">
+                      <h3 className="text-white text-sm font-bold tracking-wide uppercase mb-4 opacity-80">Engagement Insight Array</h3>
+                      
+                      <div className="space-y-4">
+                        <div>
+                            <div className="flex justify-between text-xs font-semibold mb-1.5"><span className="text-zinc-400">Predicted Lifecycle Engagement</span><span className="text-emerald-400">{storedData?.engagement}%</span></div>
+                            <div className="w-full bg-zinc-800 rounded-full h-2 overflow-hidden shadow-inner">
+                              <motion.div initial={{ width: 0 }} animate={{ width: `${storedData?.engagement}%` }} transition={{ duration: 1, ease: "easeOut" }} className="bg-emerald-500 h-full" />
+                            </div>
+                        </div>
+                        <div>
+                            <div className="flex justify-between text-xs font-semibold mb-1.5"><span className="text-zinc-400">Upsell Conversion Likelihood</span><span className="text-blue-400">High</span></div>
+                            <div className="w-full bg-zinc-800 rounded-full h-2 overflow-hidden shadow-inner">
+                              <motion.div initial={{ width: 0 }} animate={{ width: "85%" }} transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }} className="bg-blue-500 h-full" />
+                            </div>
+                        </div>
+                      </div>
+
+                      <div className="pt-2">
+                          <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Automated Next Best Action</h4>
+                          <div className="bg-white/[0.03] border border-white/10 rounded-lg p-4 text-xs text-zinc-300 leading-relaxed relative overflow-hidden">
+                              <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500 to-indigo-500" />
+                              Based on the full conversation context matched against behavioral intent modeling, Action Queued: Dispatch personalized retention campaign to user via <strong className="text-white font-semibold">{storedData?.channel}</strong> tomorrow morning.
+                          </div>
+                      </div>
+                   </div>
+               </div>
+           </div>
+        </div>
+      )}
     </div>
   );
 }

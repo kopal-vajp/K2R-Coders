@@ -34,6 +34,14 @@
 
   --animate-pulse-glow: pulse-glow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   --animate-shimmer: shimmer 2s linear infinite;
+  --animate-blob: blob 10s infinite;
+
+  @keyframes blob {
+    0% { transform: translate(0px, 0px) scale(1); }
+    33% { transform: translate(80px, -100px) scale(1.2); }
+    66% { transform: translate(-40px, 40px) scale(0.8); }
+    100% { transform: translate(0px, 0px) scale(1); }
+  }
 
   @keyframes pulse-glow {
     0%, 100% { opacity: 1; filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.2)); }

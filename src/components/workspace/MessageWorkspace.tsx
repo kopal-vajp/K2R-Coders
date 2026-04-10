@@ -59,7 +59,21 @@ function ExplainabilityDrawer({ persona }: { persona: Persona }) {
   );
 }
 
+import { useEffect } from "react";
+
 export function MessageWorkspace({ persona }: { persona: Persona }) {
+  const [sendStatus, setSendStatus] = useState<"idle" | "sending" | "sent">("idle");
+
+  useEffect(() => {
+    setSendStatus("idle");
+  }, [persona.id]);
+
+  const handleSend = () => {
+    setSendStatus("sending");
+    setTimeout(() => {
+      setSendStatus("sent");
+    }, 1500);
+  };
   const tabs = [
     { id: "WhatsApp", icon: MessageCircle, color: "text-green-400", bg: "bg-[#075E54]/40" },
     { id: "SMS", icon: MessageSquare, color: "text-blue-400", bg: "bg-blue-500/20" },
@@ -133,12 +147,21 @@ export function MessageWorkspace({ persona }: { persona: Persona }) {
         </div>
         
         {/* Action Bar */}
-        <div className="p-3 bg-black border-t border-white/5 flex gap-2 w-full justify-between items-center">
+        <div className="p-3 bg-black border-t border-white/5 flex gap-2 w-full justify-between items-center z-20">
            <div className="text-xs font-semibold text-zinc-400 uppercase">
              Est. Reply Rate: <span className="text-blue-400">{persona.output.replyRate}%</span>
            </div>
-           <button className="bg-white text-black text-xs font-bold px-4 py-2 rounded shadow-[0_0_15px_rgba(255,255,255,0.3)] hover:bg-zinc-200 transition-colors">
-              Approve & Send
+           <button 
+             onClick={handleSend}
+             disabled={sendStatus !== "idle"}
+             className={cn(
+               "text-xs font-bold px-4 py-2 rounded shadow-lg transition-all duration-300 transform",
+               sendStatus === "idle" ? "bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.3)] hover:scale-105 active:scale-95 cursor-pointer hover:bg-zinc-200" :
+               sendStatus === "sending" ? "bg-zinc-800 text-zinc-400 cursor-wait border border-white/10" :
+               "bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)]"
+             )}
+           >
+              {sendStatus === "idle" ? "Approve & Send" : sendStatus === "sending" ? "Orchestrating..." : "Message Deployed ✓"}
            </button>
         </div>
       </div>

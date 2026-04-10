@@ -73,7 +73,7 @@ export function CustomerContextLab({
         <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
         <div className="flex items-center gap-2 mb-4">
           <UserCircle className="w-4 h-4 text-blue-400" />
-          <h3 className="text-sm font-bold text-white uppercase tracking-wider">Profile</h3>
+          <h3 className="text-sm font-bold text-white uppercase tracking-wider">Identity Profile</h3>
         </div>
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div className="flex flex-col gap-1">
@@ -139,6 +139,22 @@ export function CustomerContextLab({
               )}
             </div>
           </div>
+        </div>
+      </motion.div>
+
+      {/* Identity Signal Sources */}
+      <motion.div layout className="glass-panel p-4 border border-white/5 relative bg-white/[0.01]">
+        <div className="flex items-center gap-2 mb-3">
+          <Globe className="w-4 h-4 text-cyan-400" />
+          <h3 className="text-[11px] font-bold text-white uppercase tracking-wider">Identity Signal Sources</h3>
+        </div>
+        <div className="flex flex-wrap gap-2 text-[10px] font-medium text-zinc-300">
+          <span className="px-2 py-1 bg-white/5 rounded border border-white/5">Cart Activity</span>
+          <span className="px-2 py-1 bg-white/5 rounded border border-white/5">Session Duration</span>
+          <span className="px-2 py-1 bg-white/5 rounded border border-white/5">Channel Interactions</span>
+          <span className="px-2 py-1 bg-white/5 rounded border border-white/5">Consent State</span>
+          <span className="px-2 py-1 bg-white/5 rounded border border-white/5">Loyalty Tier</span>
+          <span className="px-2 py-1 bg-white/5 rounded border border-white/5">Geo/Device Data</span>
         </div>
       </motion.div>
 

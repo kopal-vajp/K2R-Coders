@@ -50,37 +50,33 @@ function RadialGauge({ value, label, color, icon: Icon }: { value: number, label
 function DecisionLogicTree({ persona }: { persona: Persona }) {
   return (
     <div className="py-6 relative flex flex-col items-center">
-      <div className="absolute top-0 bottom-0 w-0.5 bg-white/5 left-1/2 -ml-[1px]" />
-      <motion.div 
-        className="absolute top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500 via-purple-500 to-pink-500 left-1/2 -ml-[1px]"
-        initial={{ scaleY: 0, transformOrigin: 'top' }}
-        animate={{ scaleY: 1 }}
-        transition={{ duration: 1.5, ease: "easeInOut" }}
-      />
-
-      {[
-        { step: "Evaluate Context", result: `Cart: $${persona.session.cartValue} (High Intent)` },
-        { step: "Fatigue Check", result: `${persona.ai.fatigueRisk}% Risk (Clear to send)` },
-        { step: "Channel Selection", result: `Selected: ${persona.output.platform}` },
-        { step: "Timing Optimizer", result: persona.ai.bestTiming }
-      ].map((node, i) => (
-        <div key={i} className="relative z-10 w-full flex justify-center mb-6 last:mb-0">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ delay: i * 0.4, duration: 0.5 }}
-            className="glass-panel px-4 py-2 flex flex-col items-center w-64 border-white/10 group hover:border-blue-500/50 transition-colors shadow-[0_0_15px_rgba(0,0,0,0.5)] bg-[#0A0A0A]"
-          >
-            <span className="text-[10px] text-blue-400 font-bold uppercase tracking-wider mb-1">{node.step}</span>
-            <span className="text-xs text-white font-medium text-center">{node.result}</span>
-            <motion.div 
-              className="absolute -inset-px rounded-xl border border-blue-500 opacity-0 group-hover:opacity-50"
-              animate={{ opacity: [0, 0.5, 0] }}
-              transition={{ repeat: Infinity, duration: 2 }}
-            />
-          </motion.div>
-        </div>
-      ))}
+      
+      {/* Nodes container rendered cleanly */}
+      <div className="w-full flex flex-col gap-6">
+        {[
+          { step: "Evaluate Context", result: `Cart: $${persona.session.cartValue} (High Intent)` },
+          { step: "Fatigue Check", result: `${persona.ai.fatigueRisk}% Risk (Clear to send)` },
+          { step: "Channel Selection", result: `Selected: ${persona.output.platform}` },
+          { step: "Timing Optimizer", result: persona.ai.bestTiming }
+        ].map((node, i) => (
+          <div key={i} className="w-full flex justify-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: -20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ delay: i * 0.4, duration: 0.5 }}
+              className="glass-panel px-4 py-2 flex flex-col items-center w-64 border border-white/10 group hover:border-blue-500/50 transition-colors shadow-2xl bg-zinc-950 backdrop-blur-xl"
+            >
+              <span className="text-[10px] text-blue-400 font-bold uppercase tracking-wider mb-1">{node.step}</span>
+              <span className="text-xs text-white font-medium text-center">{node.result}</span>
+              <motion.div 
+                className="absolute -inset-px rounded-xl border border-blue-500 opacity-0 group-hover:opacity-50 pointer-events-none"
+                animate={{ opacity: [0, 0.5, 0] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+              />
+            </motion.div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,36 +1,24 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MessageMind ADA Enterprise Simulator
 
-## Getting Started
+MessageMind is an interactive, frontend-heavy Next.js web application built to simulate production-scale AI CRM pipelines, ethical data tracking execution, and dynamic dataset visualization systems natively in the browser. 
 
-First, run the development server:
+## 🚀 Key Modules
+1. **Dynamic Dataset Explorer:** Features a built-in schema interpreter allowing users to natively load `.csv` or `.json` file payloads locally into the app state! It calculates dynamic data quality metrics, exports filtered Blobs safely, and structures global state perfectly without backend queries.
+2. **Intelligent Cross-Channel Chat Simulation:** Provides immersive, responsive, device-specific UI simulations for WhatsApp, SMS, and Instagram environments.
+3. **Privacy-First Intelligence Gating:** Hard-locks system extraction using strict Boolean modal checkpoints prioritizing compliance-first simulation testing! Watch the native *Post-Simulation Analytic Pipeline* drop in conditionally depending purely on tracking interaction flags.
+4. **Growth Operations Global Loop:** The main landing dashboard actively consumes localized cache data from independent sandbox executions natively, translating active engagement scores into localized Dashboard widgets and Analytics visualizer blockers dynamically.
+## 📁 Technical Breakdown
+For a comprehensive breakdown of the internal logic mappings and functionality you can play with, please navigate to the root directory and review `FEATURES.md`.
+
+## 🛠 Getting Started
+First, run the development server locally:
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to launch the AI Simulation environments.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Built natively on Next.js 14 / TailwindCSS / Lucide-React / Framer Motion.

@@ -49,9 +49,70 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
+import { useEffect, useState } from "react";
+
 export function AnalyticsCharts() {
+  const [simData, setSimData] = useState<any>(null);
+
+  useEffect(() => {
+    try {
+      const data = localStorage.getItem("simulatorData");
+      if (data) {
+        setSimData(JSON.parse(data));
+      }
+    } catch(e) {}
+  }, []);
+
+  // Dynamically calculate impacts based on sim data
+  let predictedLift = 0;
+  if (simData && !simData.privacyRestricted) {
+    if (simData.intent && (simData.intent.includes("Travel") || simData.intent.includes("Food") || simData.intent.includes("Fitness"))) {
+       predictedLift = simData.engagement > 90 ? 12.4 : 8.1;
+    } else {
+       predictedLift = 4.2;
+    }
+  }
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+    <div className="flex flex-col gap-6 mb-8">
+      
+      {/* Dynamic Session Module */}
+      {simData && simData.privacyRestricted && (
+        <div className="glass-panel border border-rose-500/20 bg-rose-500/10 rounded-2xl p-6 text-center text-rose-400">
+          <h3 className="font-bold mb-2 text-lg">Execution Halted</h3>
+          <p className="text-sm font-medium">No analytics generated due to user privacy selection. Compliance requirements satisfied.</p>
+        </div>
+      )}
+
+      {simData && !simData.privacyRestricted && (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-panel border border-emerald-500/30 bg-emerald-500/10 rounded-2xl p-6 relative overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/20 rounded-full blur-[80px]" />
+          <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            Impact from Current Session
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+            <div className="bg-black/40 border border-white/5 p-4 rounded-xl">
+              <span className="text-xs text-zinc-400 block mb-1">Predicted Revenue Lift</span>
+              <span className="text-2xl font-bold text-emerald-400">+{predictedLift}%</span>
+            </div>
+            <div className="bg-black/40 border border-white/5 p-4 rounded-xl">
+              <span className="text-xs text-zinc-400 block mb-1">Engagement Score</span>
+              <span className="text-2xl font-bold text-blue-400">{simData.engagement}%</span>
+            </div>
+            <div className="bg-black/40 border border-white/5 p-4 rounded-xl">
+              <span className="text-xs text-zinc-400 block mb-1">Recommended Execution Channel</span>
+              <span className="text-xl font-bold text-white">{simData.channel}</span>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
       
       {/* Uplift Trend Line Chart */}
       <motion.div 
@@ -61,8 +122,8 @@ export function AnalyticsCharts() {
       >
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h3 className="text-lg font-bold text-white">Revenue Uplift</h3>
-            <p className="text-sm text-zinc-400">AI vs Baseline Performance</p>
+            <h3 className="text-lg font-bold text-white">Revenue Lift</h3>
+            <p className="text-sm text-zinc-400">Performance Impact vs Baseline</p>
           </div>
           <div className="flex gap-4 text-xs font-medium">
             <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-blue-500"></div> AI Revenue</div>
@@ -116,7 +177,7 @@ export function AnalyticsCharts() {
           </ResponsiveContainer>
         </div>
       </motion.div>
-
+      </div>
     </div>
   );
 }

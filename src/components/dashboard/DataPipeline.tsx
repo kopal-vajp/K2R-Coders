@@ -3,16 +3,40 @@
 import { motion } from "framer-motion";
 import { Database, Cpu, BrainCircuit, Split, Smartphone, BarChart3 } from "lucide-react";
 
-const nodes = [
+import { useEffect, useState } from "react";
+
+const defaultNodes = [
   { id: "events", label: "Events", icon: Database, color: "text-blue-400", bg: "bg-blue-500/20", glow: "shadow-[0_0_15px_rgba(59,130,246,0.5)]", counter: "12.4k/s" },
   { id: "features", label: "Feature Engine", icon: Cpu, color: "text-indigo-400", bg: "bg-indigo-500/20", glow: "shadow-[0_0_15px_rgba(99,102,241,0.5)]", counter: "12.4k/s" },
   { id: "brain", label: "AI Brain", icon: BrainCircuit, color: "text-purple-400", bg: "bg-purple-500/20", glow: "shadow-[0_0_25px_rgba(168,85,247,0.8)]", counter: "99.8% conf" },
   { id: "decision", label: "Decision", icon: Split, color: "text-pink-400", bg: "bg-pink-500/20", glow: "shadow-[0_0_15px_rgba(236,72,153,0.5)]", counter: "10ms lat" },
   { id: "channels", label: "Channels", icon: Smartphone, color: "text-rose-400", bg: "bg-rose-500/20", glow: "shadow-[0_0_15px_rgba(244,63,94,0.5)]", counter: "3 active" },
-  { id: "analytics", label: "Analytics", icon: BarChart3, color: "text-emerald-400", bg: "bg-emerald-500/20", glow: "shadow-[0_0_15px_rgba(16,185,129,0.5)]", counter: "Syncing" },
+  { id: "analytics", label: "Learning Loop", icon: BarChart3, color: "text-emerald-400", bg: "bg-emerald-500/20", glow: "shadow-[0_0_15px_rgba(16,185,129,0.5)]", counter: "Syncing" },
 ];
 
 export function DataPipeline() {
+  const [nodes, setNodes] = useState(defaultNodes);
+  const [isActive, setIsActive] = useState(false);
+
+  useEffect(() => {
+    try {
+      const data = localStorage.getItem("simulatorData");
+      if (data) {
+        const simData = JSON.parse(data);
+        if (!simData.privacyRestricted) {
+           setIsActive(true);
+           setNodes([
+             { id: "events", label: "Customer Signal", icon: Database, color: "text-blue-400", bg: "bg-blue-500/20", glow: "shadow-[0_0_25px_rgba(59,130,246,0.8)]", counter: "Session Context" },
+             { id: "features", label: "Feature Engine", icon: Cpu, color: "text-indigo-400", bg: "bg-indigo-500/20", glow: "shadow-[0_0_15px_rgba(99,102,241,0.5)]", counter: `${simData.intent}` },
+             { id: "brain", label: "AI Decision", icon: BrainCircuit, color: "text-purple-400", bg: "bg-purple-500/20", glow: "shadow-[0_0_25px_rgba(168,85,247,0.8)]", counter: "Upsell Path" },
+             { id: "decision", label: "Campaign", icon: Split, color: "text-pink-400", bg: "bg-pink-500/20", glow: "shadow-[0_0_15px_rgba(236,72,153,0.5)]", counter: "Personalized" },
+             { id: "channels", label: "Response", icon: Smartphone, color: "text-rose-400", bg: "bg-rose-500/20", glow: "shadow-[0_0_25px_rgba(244,63,94,0.8)]", counter: simData.channel },
+             { id: "analytics", label: "Learning Loop", icon: BarChart3, color: "text-emerald-400", bg: "bg-emerald-500/20", glow: "shadow-[0_0_30px_rgba(16,185,129,1)]", counter: `Eng: ${simData.engagement}%` },
+           ]);
+        }
+      }
+    } catch(e) {}
+  }, []);
   return (
     <div className="glass-panel border border-white/5 rounded-2xl p-6 mb-8 relative overflow-hidden">
       <div className="flex items-center justify-between mb-8 relative z-10">
@@ -22,7 +46,7 @@ export function DataPipeline() {
         </div>
         <div className="flex justify-center items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
           <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,1)]" />
-          <span className="text-xs font-semibold text-emerald-400 text-transparent">System Nominal</span>
+          <span className="text-xs font-semibold text-white">{isActive ? 'Learning Loop Active' : 'System Nominal'}</span>
         </div>
       </div>
 

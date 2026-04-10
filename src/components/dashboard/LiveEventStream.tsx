@@ -6,11 +6,11 @@ import { ShoppingCart, Package, CreditCard, Gift, MessageCircle } from "lucide-r
 import { cn } from "@/lib/utils";
 
 const eventTypes = [
-  { type: "Cart Abandoned", icon: ShoppingCart, color: "text-amber-400", bg: "bg-amber-400/10", border: "border-amber-400/20" },
-  { type: "Shipping Query", icon: Package, color: "text-blue-400", bg: "bg-blue-400/10", border: "border-blue-400/20" },
-  { type: "Checkout Retry", icon: CreditCard, color: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-emerald-400/20" },
-  { type: "Promo Suppression", icon: Gift, color: "text-rose-400", bg: "bg-rose-400/10", border: "border-rose-400/20" },
-  { type: "WhatsApp Delivery", icon: MessageCircle, color: "text-teal-400", bg: "bg-teal-400/10", border: "border-teal-400/20" },
+  { type: "checkout_abandon", icon: ShoppingCart, color: "text-amber-400", bg: "bg-amber-400/10", border: "border-amber-400/20" },
+  { type: "support_query", icon: Package, color: "text-blue-400", bg: "bg-blue-400/10", border: "border-blue-400/20" },
+  { type: "repeat_visit", icon: CreditCard, color: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-emerald-400/20" },
+  { type: "coupon_failure", icon: Gift, color: "text-rose-400", bg: "bg-rose-400/10", border: "border-rose-400/20" },
+  { type: "product_view", icon: MessageCircle, color: "text-teal-400", bg: "bg-teal-400/10", border: "border-teal-400/20" },
 ];
 
 const mockUsers = ["u_1094x", "u_8821a", "u_4402b", "u_9114c", "u_0029f"];
@@ -54,7 +54,7 @@ export function LiveEventStream() {
       </div>
       
       <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
-        Live Event Stream
+        Real-Time Customer Signal Stream
       </h3>
 
       <div className="flex-1 overflow-hidden relative">

@@ -23,7 +23,7 @@ const navItems = [
   { name: "AI Decision Engine", icon: BrainCircuit, href: "/workspace" },
   { name: "Chat Simulator", icon: MessageSquare, href: "/chat-simulator" },
   { name: "Privacy Governance", icon: ShieldCheck, href: "/privacy" },
-  { name: "Analytics", icon: LineChart, href: "/analytics" },
+  { name: "Growth Operations", icon: LineChart, href: "/analytics" },
   { name: "Settings", icon: Settings, href: "/settings" },
 ];
 
@@ -63,9 +63,9 @@ export function Sidebar() {
 
       <button 
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3 top-20 flex h-6 w-6 items-center justify-center rounded-full bg-secondary border border-white/10 text-white/70 hover:text-white hover:bg-white/10 transition-colors shadow-lg z-30"
+        className="absolute right-0 translate-x-[40%] md:translate-x-1/2 top-20 flex h-7 w-7 items-center justify-center rounded-full bg-zinc-900 border border-white/10 text-white hover:bg-white/10 transition-colors shadow-[0_0_15px_rgba(0,0,0,0.5)] z-50 cursor-pointer"
       >
-        {isCollapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
+        {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
       </button>
 
       <div className="flex flex-1 flex-col gap-1 px-3 py-4 overflow-y-auto">

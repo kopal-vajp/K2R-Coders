@@ -10,7 +10,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "MessageMind AI | Omnichannel Intelligence",
-  description: "Predict, Decide, Personalize, Explain. Enterprise AI SaaS.",
+  description: "Real-Time Identity & Growth Decision Engine. Enterprise AI SaaS.",
 };
 
 export default function RootLayout({
@@ -19,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`dark ${inter.variable} suppressHydrationWarning h-full antialiased`}>
-      <body className="min-h-full flex flex-col font-sans overflow-hidden">
+    <html lang="en" suppressHydrationWarning className={`dark ${inter.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col font-sans overflow-hidden bg-black text-white" suppressHydrationWarning={true}>
         <AppLayout>{children}</AppLayout>
       </body>
     </html>

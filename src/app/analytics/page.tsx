@@ -8,8 +8,8 @@ export default function AnalyticsPage() {
     <div className="pb-20 min-h-full flex flex-col">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">ROI & Analytics</h1>
-          <p className="text-sm text-zinc-400">Global suppression savings, uplift metrics, and model confidence trends.</p>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Growth Operations</h1>
+          <p className="text-sm text-zinc-400">Global suppression savings, revenue lift impact, and model confidence trends.</p>
         </div>
       </div>
 
@@ -37,7 +37,7 @@ export default function AnalyticsPage() {
                 <div className="p-2 bg-blue-500/10 rounded-lg">
                   <Activity className="h-5 w-5 text-blue-400" />
                 </div>
-                <h3 className="text-sm font-medium">Conversion Uplift</h3>
+                <h3 className="text-sm font-medium">Revenue Lift</h3>
               </div>
               <div className="text-3xl font-bold text-white relative z-10">+4.2%</div>
               <div className="text-xs text-blue-400 font-medium flex items-center gap-1 mt-2 relative z-10">
@@ -71,6 +71,26 @@ export default function AnalyticsPage() {
               <div className="text-xs text-zinc-500 font-medium mt-2 relative z-10">
                 TOTAL REACHED THIS QUARTER
               </div>
+            </div>
+          </div>
+
+          {/* Continuous Optimization Engine */}
+          <div className="glass-panel p-6 rounded-2xl border border-white/5">
+            <h3 className="text-white text-lg font-semibold mb-4">Continuous Optimization Engine</h3>
+            <div className="flex flex-col md:flex-row items-center justify-between gap-2 text-xs md:text-sm font-medium text-zinc-300">
+              <div className="bg-white/5 py-2 px-3 rounded-lg text-center flex-1 w-full">Customer Signals</div>
+              <span className="text-blue-500 hidden md:block">→</span>
+              <span className="text-blue-500 block md:hidden">↓</span>
+              <div className="bg-blue-500/10 border border-blue-500/20 py-2 px-3 rounded-lg text-blue-400 text-center flex-1 w-full">AI Decision</div>
+              <span className="text-purple-500 hidden md:block">→</span>
+              <span className="text-purple-500 block md:hidden">↓</span>
+              <div className="bg-purple-500/10 border border-purple-500/20 py-2 px-3 rounded-lg text-purple-400 text-center flex-1 w-full">Campaign</div>
+              <span className="text-emerald-500 hidden md:block">→</span>
+              <span className="text-emerald-500 block md:hidden">↓</span>
+              <div className="bg-emerald-500/10 border border-emerald-500/20 py-2 px-3 rounded-lg text-emerald-400 text-center flex-1 w-full">Response</div>
+              <span className="text-amber-500 hidden md:block">→</span>
+              <span className="text-amber-500 block md:hidden">↓</span>
+              <div className="bg-amber-500/10 border border-amber-500/20 py-2 px-3 rounded-lg text-amber-400 text-center flex-1 w-full">Learning Loop</div>
             </div>
           </div>
 
