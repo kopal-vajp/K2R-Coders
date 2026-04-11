@@ -1,7 +1,3 @@
----
-
-# MessageMind
-
 **MessageMind** is a modern, frontend-focused Next.js application built to simulate real-world AI-driven CRM systems. It demonstrates how data, automation, and personalization work together seamlessly—right inside the browser.
 
 🔗 **Live Demo:** [https://messageemind.vercel.app/](https://messageemind.vercel.app/)
