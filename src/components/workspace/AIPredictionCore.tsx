@@ -50,7 +50,7 @@ function RadialGauge({ value, label, color, icon: Icon }: { value: number, label
 function DecisionLogicTree({ persona }: { persona: Persona }) {
   return (
     <div className="py-6 relative flex flex-col items-center">
-      
+
       {/* Nodes container rendered cleanly */}
       <div className="w-full flex flex-col gap-6">
         {[
@@ -68,7 +68,7 @@ function DecisionLogicTree({ persona }: { persona: Persona }) {
             >
               <span className="text-[10px] text-blue-400 font-bold uppercase tracking-wider mb-1">{node.step}</span>
               <span className="text-xs text-white font-medium text-center">{node.result}</span>
-              <motion.div 
+              <motion.div
                 className="absolute -inset-px rounded-xl border border-blue-500 opacity-0 group-hover:opacity-50 pointer-events-none"
                 animate={{ opacity: [0, 0.5, 0] }}
                 transition={{ repeat: Infinity, duration: 2 }}
@@ -94,7 +94,7 @@ export function AIPredictionCore({ persona }: { persona: Persona }) {
           <Wand2 className="w-5 h-5 text-blue-400" />
           <h2 className="text-base font-bold text-white uppercase tracking-wider">Design Engine</h2>
         </div>
-        
+
         <div className="flex justify-around w-full">
           <RadialGauge value={persona.ai.conversionProb} label="Conversion Prob" color="text-emerald-400" icon={Target} />
           <RadialGauge value={persona.ai.fatigueRisk} label="Fatigue Risk" color="text-rose-400" icon={TrendingDown} />
@@ -106,13 +106,13 @@ export function AIPredictionCore({ persona }: { persona: Persona }) {
           <Zap className="w-4 h-4 text-amber-400" />
           <span className="text-xs font-bold text-white uppercase tracking-wider">Logic Tree</span>
         </div>
-        
+
         <div className="flex-1 flex flex-col justify-center">
           <DecisionLogicTree persona={persona} />
         </div>
       </div>
 
-      <motion.div 
+      <motion.div
         key={persona.id + "-recommendation"}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -121,7 +121,7 @@ export function AIPredictionCore({ persona }: { persona: Persona }) {
       >
         <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
         <h3 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-4">Consensus Recommendation</h3>
-        
+
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
             <span className="text-[10px] text-zinc-400 uppercase font-semibold">Deploy Channel</span>

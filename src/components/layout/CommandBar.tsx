@@ -42,25 +42,25 @@ export function CommandBar() {
     e.preventDefault();
     if (!aiInput.trim()) return;
     const newMsg = { id: Date.now(), role: 'user', text: aiInput };
-    
+
     // Calculate user message count before the state updates
     const userMessageCount = messages.filter(m => m.role === 'user').length;
-    
+
     setMessages(prev => [...prev, newMsg]);
     setAiInput("");
-    
+
     setTimeout(() => {
       if (userMessageCount === 0) {
-        setMessages(prev => [...prev, { 
-          id: Date.now() + 1, 
-          role: 'ai', 
-          text: "I have recorded your query and someone will contact you soon to resolve it. Our team is available 24/7! Sorry for the trouble, we will connect you to a human agent soon. Until then, please keep exploring our site more! 🚀✨" 
+        setMessages(prev => [...prev, {
+          id: Date.now() + 1,
+          role: 'ai',
+          text: "I have recorded your query and someone will contact you soon to resolve it. Our team is available 24/7! Sorry for the trouble, we will connect you to a human agent soon. Until then, please keep exploring our site more! 🚀✨"
         }]);
       } else {
-        setMessages(prev => [...prev, { 
-          id: Date.now() + 1, 
-          role: 'ai', 
-          text: "I sincerely apologize for the delay. If you need immediate assistance, please email us directly at support@messagemind-dummy.com. Until then, keep exploring! 🙏✨" 
+        setMessages(prev => [...prev, {
+          id: Date.now() + 1,
+          role: 'ai',
+          text: "I sincerely apologize for the delay. If you need immediate assistance, please email us directly at support@messagemind-dummy.com. Until then, keep exploring! 🙏✨"
         }]);
       }
     }, 1000);
@@ -69,91 +69,91 @@ export function CommandBar() {
   return (
     <>
       <header className="sticky top-0 z-50 h-16 w-full glass-panel border-x-0 border-t-0 rounded-none flex items-center justify-between px-6">
-      <div className="flex items-center gap-4 ml-auto pl-4">
-        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold mr-2">
-          <div className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,1)]"></span>
+        <div className="flex items-center gap-4 ml-auto pl-4">
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold mr-2">
+            <div className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,1)]"></span>
+            </div>
+            Admin Online
           </div>
-          Admin Online
-        </div>
 
-        {/* Notifications */}
-        <div className="relative" ref={dropdownRef}>
-          <button 
-            onClick={() => setIsOpen(!isOpen)}
-            className={`relative p-2 rounded-full transition-colors ${isOpen ? 'bg-white/10 text-white' : 'text-zinc-400 hover:bg-white/10 hover:text-white'}`}
-          >
-            <Bell className="h-5 w-5" />
-            {hasUnread && (
-              <span className="absolute top-1.5 right-2 h-2 w-2 rounded-full bg-red-500 border-2 border-[#0a0a0a]"></span>
-            )}
-          </button>
+          {/* Notifications */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className={`relative p-2 rounded-full transition-colors ${isOpen ? 'bg-white/10 text-white' : 'text-zinc-400 hover:bg-white/10 hover:text-white'}`}
+            >
+              <Bell className="h-5 w-5" />
+              {hasUnread && (
+                <span className="absolute top-1.5 right-2 h-2 w-2 rounded-full bg-red-500 border-2 border-[#0a0a0a]"></span>
+              )}
+            </button>
 
-          <AnimatePresence>
-            {isOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-                className="absolute right-0 mt-2 w-80 rounded-xl border border-white/10 glass-panel bg-[#0a0a0a]/95 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] overflow-hidden z-50"
-              >
-                <div className="p-4 border-b border-white/10 flex justify-between items-center bg-gradient-to-r from-blue-500/5 to-purple-500/5">
-                  <h3 className="text-sm font-semibold text-white">Notifications</h3>
-                  {hasUnread && (
-                    <button 
-                      onClick={handleMarkAsRead}
-                      className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1 transition-colors"
-                    >
-                      <CheckCircle2 className="h-3 w-3" />
-                      Mark all as read
-                    </button>
-                  )}
-                </div>
-                
-                <div className="max-h-[320px] overflow-y-auto">
-                  {NOTIFICATIONS.map((notification, idx) => {
-                    const Icon = notification.icon;
-                    return (
-                      <div 
-                        key={notification.id}
-                        className={`p-4 flex items-start gap-3 hover:bg-white/5 transition-colors cursor-pointer ${idx !== NOTIFICATIONS.length - 1 ? 'border-b border-white/5' : ''}`}
+            <AnimatePresence>
+              {isOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  className="absolute right-0 mt-2 w-80 rounded-xl border border-white/10 glass-panel bg-[#0a0a0a]/95 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] overflow-hidden z-50"
+                >
+                  <div className="p-4 border-b border-white/10 flex justify-between items-center bg-gradient-to-r from-blue-500/5 to-purple-500/5">
+                    <h3 className="text-sm font-semibold text-white">Notifications</h3>
+                    {hasUnread && (
+                      <button
+                        onClick={handleMarkAsRead}
+                        className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1 transition-colors"
                       >
-                        <div className={`mt-0.5 shrink-0 h-8 w-8 rounded-full flex items-center justify-center ${notification.bg} ${notification.color}`}>
-                          <Icon className="h-4 w-4" />
-                        </div>
-                        <div className="flex-1 space-y-1">
-                          <p className="text-sm text-zinc-200 leading-tight pr-2">{notification.text}</p>
-                          <p className="text-xs text-zinc-500">{notification.time}</p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+                        <CheckCircle2 className="h-3 w-3" />
+                        Mark all as read
+                      </button>
+                    )}
+                  </div>
 
-        <button 
-          onClick={() => setIsAiOpen(true)}
-          className="p-2 rounded-full hover:bg-white/10 transition-colors text-zinc-400 hover:text-purple-400 group relative"
-        >
-          <Sparkles className="h-5 w-5" />
-          <motion.div
-            className="absolute inset-0 bg-purple-500 rounded-full blur opacity-0 group-hover:opacity-40 transition-opacity"
-            initial={false}
-            transition={{ duration: 0.3 }}
-          />
-        </button>
-      </div>
+                  <div className="max-h-[320px] overflow-y-auto">
+                    {NOTIFICATIONS.map((notification, idx) => {
+                      const Icon = notification.icon;
+                      return (
+                        <div
+                          key={notification.id}
+                          className={`p-4 flex items-start gap-3 hover:bg-white/5 transition-colors cursor-pointer ${idx !== NOTIFICATIONS.length - 1 ? 'border-b border-white/5' : ''}`}
+                        >
+                          <div className={`mt-0.5 shrink-0 h-8 w-8 rounded-full flex items-center justify-center ${notification.bg} ${notification.color}`}>
+                            <Icon className="h-4 w-4" />
+                          </div>
+                          <div className="flex-1 space-y-1">
+                            <p className="text-sm text-zinc-200 leading-tight pr-2">{notification.text}</p>
+                            <p className="text-xs text-zinc-500">{notification.time}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <button
+            onClick={() => setIsAiOpen(true)}
+            className="p-2 rounded-full hover:bg-white/10 transition-colors text-zinc-400 hover:text-purple-400 group relative"
+          >
+            <Sparkles className="h-5 w-5" />
+            <motion.div
+              className="absolute inset-0 bg-purple-500 rounded-full blur opacity-0 group-hover:opacity-40 transition-opacity"
+              initial={false}
+              transition={{ duration: 0.3 }}
+            />
+          </button>
+        </div>
       </header>
 
       <AnimatePresence>
         {isAiOpen && (
           <>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}

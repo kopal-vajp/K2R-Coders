@@ -23,6 +23,7 @@ type Event = {
 };
 
 export function LiveEventStream() {
+  const [mounted, setMounted] = useState(false);
   const [events, setEvents] = useState<Event[]>([
     { id: "1", typeData: eventTypes[0], user: mockUsers[0], timestamp: "Just now" },
     { id: "2", typeData: eventTypes[1], user: mockUsers[1], timestamp: "2s ago" },
@@ -30,6 +31,25 @@ export function LiveEventStream() {
   ]);
 
   useEffect(() => {
+    setMounted(true);
+    const handleStorage = () => {
+      try {
+        const data = localStorage.getItem("simulatorData");
+        if (data) {
+          const simData = JSON.parse(data);
+          if (!simData.privacyRestricted) {
+             const newEvent: Event = {
+              id: `sim-${Date.now()}`,
+              typeData: { ...eventTypes[1], type: `dialogue_complete (${simData.channel})` },
+              user: "USR_SIMULATED",
+              timestamp: "Just now",
+            };
+            setEvents(prev => [newEvent, ...prev.slice(0, 4)]);
+          }
+        }
+      } catch(e) {}
+    };
+
     const interval = setInterval(() => {
       const newEvent: Event = {
         id: Math.random().toString(36).substr(2, 9),
@@ -39,10 +59,16 @@ export function LiveEventStream() {
       };
 
       setEvents(prev => [newEvent, ...prev.slice(0, 4)]);
-    }, 3000);
+    }, 4000);
 
-    return () => clearInterval(interval);
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('storage', handleStorage);
+    };
   }, []);
+
+  if (!mounted) return null;
 
   return (
     <div className="glass-panel border border-white/5 rounded-2xl p-6 h-[400px] flex flex-col relative overflow-hidden">
@@ -52,14 +78,14 @@ export function LiveEventStream() {
           <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 shadow-[0_0_8px_rgba(239,68,68,1)]"></span>
         </div>
       </div>
-      
+
       <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
         Real-Time Customer Signal Stream
       </h3>
 
       <div className="flex-1 overflow-hidden relative">
         <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-card to-transparent z-10 pointer-events-none" />
-        
+
         <div className="flex flex-col gap-3">
           <AnimatePresence initial={false}>
             {events.map((event) => (
@@ -78,7 +104,7 @@ export function LiveEventStream() {
                 <div className={cn("p-2 rounded-lg shrink-0", event.typeData.bg)}>
                   <event.typeData.icon className={cn("w-4 h-4", event.typeData.color)} />
                 </div>
-                
+
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-sm font-semibold text-white truncate">{event.typeData.type}</span>

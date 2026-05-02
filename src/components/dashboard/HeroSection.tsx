@@ -126,7 +126,7 @@ export function HeroSection() {
               whileTap={{ scale: 0.95 }}
               className="w-full px-8 py-4 rounded-full glass-panel-glow border border-white/10 text-white font-semibold flex items-center justify-center hover:bg-white/5 transition-colors"
             >
-              View Growth Operations
+              View Trust & Growth
             </motion.button>
           </Link>
         </div>

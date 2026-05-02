@@ -7,14 +7,14 @@ import {
   Database,
   BrainCircuit,
   MessageSquare,
-  ShieldCheck,
-  LineChart,
+  Scale,
   Settings,
   ChevronLeft,
   ChevronRight,
   Wand2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 import { usePathname } from "next/navigation";
 
@@ -23,8 +23,7 @@ const navItems = [
   { name: "Dataset Explorer", icon: Database, href: "/datasets" },
   { name: "AI Design Engine", icon: Wand2, href: "/workspace" },
   { name: "Chat Simulator", icon: MessageSquare, href: "/chat-simulator" },
-  { name: "Privacy Governance", icon: ShieldCheck, href: "/privacy" },
-  { name: "Growth Operations", icon: LineChart, href: "/analytics" },
+  { name: "Trust & Growth", icon: Scale, href: "/analytics" },
   { name: "Settings", icon: Settings, href: "/settings" },
 ];
 
@@ -74,7 +73,7 @@ export function Sidebar() {
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
-            <a
+            <Link
               key={item.name}
               href={item.href}
               className={cn(
@@ -110,7 +109,7 @@ export function Sidebar() {
                   {item.name}
                 </motion.span>
               )}
-            </a>
+            </Link>
           );
         })}
       </div>

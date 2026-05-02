@@ -52,8 +52,8 @@ export function CustomerContextLab({
                       setIsDropdownOpen(false);
                     }}
                     className={`px-3 py-2.5 mb-1 last:mb-0 rounded-lg flex items-center gap-3 cursor-pointer transition-all duration-200 border-l-[3px] 
-                      ${isSelected 
-                        ? "bg-blue-500/15 border-blue-400 pl-3 shadow-inner" 
+                      ${isSelected
+                        ? "bg-blue-500/15 border-blue-400 pl-3 shadow-inner"
                         : "border-transparent hover:bg-blue-500/10 hover:border-blue-400 hover:pl-3"
                       }`}
                   >

@@ -5,7 +5,6 @@ import { personas } from "@/components/workspace/mockPersonas";
 import { CustomerContextLab } from "@/components/workspace/CustomerContextLab";
 import { AIPredictionCore } from "@/components/workspace/AIPredictionCore";
 import { MessageWorkspace } from "@/components/workspace/MessageWorkspace";
-import { LiveEventStream } from "@/components/dashboard/LiveEventStream";
 
 export default function WorkspacePage() {
   const [selectedPersona, setSelectedPersona] = useState(personas[0]);
@@ -18,15 +17,15 @@ export default function WorkspacePage() {
           <p className="text-sm text-zinc-400">Omnichannel resolution logic & explainability console</p>
         </div>
       </div>
-      
+
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 h-full items-start">
-        
+
         {/* Column 1: Customer Context Lab */}
         <section className="lg:sticky lg:top-24 flex flex-col gap-4">
           <h2 className="text-[11px] uppercase tracking-[0.2em] text-zinc-500 font-bold mb-2">I. Context Intake</h2>
-          <CustomerContextLab 
-            selectedPersona={selectedPersona} 
-            onSelectPersona={setSelectedPersona} 
+          <CustomerContextLab
+            selectedPersona={selectedPersona}
+            onSelectPersona={setSelectedPersona}
           />
         </section>
 
@@ -43,11 +42,7 @@ export default function WorkspacePage() {
         </section>
 
       </div>
-
-      {/* Real-time signals moved down here */}
-      <div className="mt-8">
-        <LiveEventStream />
-      </div>
     </div>
   );
 }
+

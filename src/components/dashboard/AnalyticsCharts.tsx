@@ -53,15 +53,25 @@ import { useEffect, useState } from "react";
 
 export function AnalyticsCharts() {
   const [simData, setSimData] = useState<any>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    try {
-      const data = localStorage.getItem("simulatorData");
-      if (data) {
-        setSimData(JSON.parse(data));
-      }
-    } catch(e) {}
+    setMounted(true);
+    const updateCharts = () => {
+      try {
+        const data = localStorage.getItem("simulatorData");
+        if (data) {
+          setSimData(JSON.parse(data));
+        }
+      } catch(e) {}
+    };
+
+    updateCharts();
+    window.addEventListener('storage', updateCharts);
+    return () => window.removeEventListener('storage', updateCharts);
   }, []);
+
+  if (!mounted) return <div className="h-[250px] w-full" />;
 
   // Dynamically calculate impacts based on sim data
   let predictedLift = 0;
@@ -131,7 +141,7 @@ export function AnalyticsCharts() {
           </div>
         </div>
         <div className="h-[250px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minHeight={0} minWidth={0}>
             <AreaChart data={upliftData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
@@ -162,7 +172,7 @@ export function AnalyticsCharts() {
           <p className="text-sm text-zinc-400">Conversion by platform</p>
         </div>
         <div className="h-[250px] w-full flex-1">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minHeight={0} minWidth={0}>
             <BarChart data={channelData} layout="vertical" margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" horizontal={false} />
               <XAxis type="number" hide />

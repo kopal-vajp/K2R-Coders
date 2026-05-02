@@ -43,26 +43,38 @@ function AnimatedCounter({ value, suffix }: { value: number, suffix: string }) {
 
 export function KPICards() {
   const [kpis, setKpis] = useState(defaultKpis);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    try {
-      const data = localStorage.getItem("simulatorData");
-      if (data) {
-        const simData = JSON.parse(data);
-        if (!simData.privacyRestricted) {
-           const lift = simData.engagement > 90 ? 46.5 : 38.2;
-           setKpis([
-            { id: 1, title: "Predicted Revenue Lift", value: lift, suffix: "%", trend: "+12.3%", isPositive: true, icon: DollarSign, color: "from-emerald-400 to-emerald-600" },
-            { id: 2, title: "Conversion Accuracy", value: simData.engagement, suffix: "%", trend: `+${(simData.engagement - 92.8).toFixed(1)}%`, isPositive: true, icon: Target, color: "from-blue-400 to-indigo-600" },
-            { id: 3, title: "Fatigue Prevented", value: 143, suffix: "", trend: "+13", isPositive: true, icon: BellOff, color: "from-amber-400 to-orange-600" },
-            { id: 4, title: "Suppression Savings", value: 45.4, suffix: "k", trend: "+2.7k", isPositive: true, icon: ShieldAlert, color: "from-emerald-400 to-teal-600" },
-            { id: 5, title: "Active Users", value: 1.24, suffix: "M", trend: "+8.4%", isPositive: true, icon: Users, color: "from-cyan-400 to-blue-500" },
-            { id: 6, title: "Channel Efficiency", value: simData.engagement > 88.5 ? simData.engagement : 88.5, suffix: "%", trend: "+7.2%", isPositive: true, icon: Network, color: "from-purple-400 to-pink-600" },
-           ]);
+    setMounted(true);
+    const updateKpis = () => {
+      try {
+        const data = localStorage.getItem("simulatorData");
+        if (data) {
+          const simData = JSON.parse(data);
+          if (!simData.privacyRestricted) {
+             const lift = simData.engagement > 90 ? 46.5 : 38.2;
+             setKpis([
+              { id: 1, title: "Predicted Revenue Lift", value: lift, suffix: "%", trend: "+12.3%", isPositive: true, icon: DollarSign, color: "from-emerald-400 to-emerald-600" },
+              { id: 2, title: "Conversion Accuracy", value: simData.engagement, suffix: "%", trend: `+${(simData.engagement - 92.8).toFixed(1)}%`, isPositive: true, icon: Target, color: "from-blue-400 to-indigo-600" },
+              { id: 3, title: "Fatigue Prevented", value: 143, suffix: "", trend: "+13", isPositive: true, icon: BellOff, color: "from-amber-400 to-orange-600" },
+              { id: 4, title: "Suppression Savings", value: 45.4, suffix: "k", trend: "+2.7k", isPositive: true, icon: ShieldAlert, color: "from-emerald-400 to-teal-600" },
+              { id: 5, title: "Active Users", value: 1.24, suffix: "M", trend: "+8.4%", isPositive: true, icon: Users, color: "from-cyan-400 to-blue-500" },
+              { id: 6, title: "Channel Efficiency", value: simData.engagement > 88.5 ? simData.engagement : 88.5, suffix: "%", trend: "+7.2%", isPositive: true, icon: Network, color: "from-purple-400 to-pink-600" },
+             ]);
+          } else {
+             setKpis(defaultKpis);
+          }
         }
-      }
-    } catch (e) {}
-  }, []);
+      } catch (e) {}
+    };
+
+    updateKpis();
+    window.addEventListener('storage', updateKpis);
+    return () => window.removeEventListener('storage', updateKpis);
+  }, [mounted]);
+
+  if (!mounted) return null;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">

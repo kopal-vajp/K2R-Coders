@@ -17,7 +17,7 @@ function ExplainabilityDrawer({ persona }: { persona: Persona }) {
 
   return (
     <div className="glass-panel border border-white/5 overflow-hidden">
-      <button 
+      <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full px-5 py-4 flex items-center justify-between bg-white/[0.02] hover:bg-white/[0.04] transition-colors"
       >
@@ -27,7 +27,7 @@ function ExplainabilityDrawer({ persona }: { persona: Persona }) {
         </div>
         <ChevronDown className={cn("w-4 h-4 text-zinc-400 transition-transform duration-300", isOpen && "rotate-180")} />
       </button>
-      
+
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -63,16 +63,36 @@ import { useEffect } from "react";
 
 export function MessageWorkspace({ persona }: { persona: Persona }) {
   const [sendStatus, setSendStatus] = useState<"idle" | "sending" | "sent">("idle");
+  const [messages, setMessages] = useState<any[]>([]);
 
   useEffect(() => {
     setSendStatus("idle");
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch(`/api/messages?personaId=${persona.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setMessages(data.messages || []);
+        } else {
+          setMessages([]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch messages");
+        setMessages([]);
+      }
+    };
+    fetchMessages();
   }, [persona.id]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     setSendStatus("sending");
-    setTimeout(() => {
+    try {
+      await fetch('/api/messages/send', { method: 'POST', body: JSON.stringify({ personaId: persona.id }) });
       setSendStatus("sent");
-    }, 1500);
+    } catch (error) {
+      console.error("Failed to send message");
+      setSendStatus("idle");
+    }
   };
   const tabs = [
     { id: "WhatsApp", icon: MessageCircle, color: "text-green-400", bg: "bg-[#075E54]/40" },
@@ -84,12 +104,12 @@ export function MessageWorkspace({ persona }: { persona: Persona }) {
   return (
     <div className="flex flex-col gap-4 h-full">
       <div className="glass-panel border border-white/5 flex flex-col overflow-hidden h-[450px]">
-        
+
         {/* Tabs */}
         <div className="flex border-b border-white/5 bg-black/20">
           {tabs.map(tab => (
-            <div 
-              key={tab.id} 
+            <div
+              key={tab.id}
               className={cn(
                 "flex-1 py-3 flex items-center justify-center gap-2 text-xs font-semibold cursor-default transition-colors",
                 persona.output.platform === tab.id ? "bg-white/10 text-white shadow-inner border-b-2 border-blue-500" : "text-zinc-500 opacity-50"
@@ -103,73 +123,62 @@ export function MessageWorkspace({ persona }: { persona: Persona }) {
 
         {/* Message Preview Area */}
         <div className="flex-1 bg-black/60 relative p-4 flex flex-col justify-end gap-3 custom-scrollbar overflow-y-auto">
-          <div className="absolute inset-0 bg-[url('https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg')] opacity-10 bg-cover bg-center pointer-events-none"></div>
-          
+          <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-transparent opacity-10 pointer-events-none"></div>
+
           <AnimatePresence mode="wait">
-            <motion.div 
+            <motion.div
               key={persona.id + "-msg"}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="z-10 flex flex-col gap-3 w-full"
             >
-              {persona.output.previewMessage.map((msg, i) => (
-                <motion.div 
-                  key={i}
+              {messages.map((msg, i) => (
+                <motion.div
+                  key={msg.id || i}
                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ delay: 2 + (i * 1.5) }} // Delay to show typing
+                  transition={{ delay: i * 0.2 }}
                   className={cn(
-                    "self-end max-w-[85%] backdrop-blur-md rounded-2xl rounded-tr-sm p-3 text-sm text-white shadow-lg",
-                    persona.output.platform === "WhatsApp" && "bg-green-600/90",
-                    persona.output.platform === "SMS" && "bg-blue-600/90",
-                    persona.output.platform === "Instagram" && "bg-zinc-800/90 border border-white/10",
-                    persona.output.platform === "Email" && "bg-zinc-100 text-black w-full"
+                    "max-w-[85%] backdrop-blur-md p-3 text-sm text-white shadow-lg",
+                    msg.sender === "user" ? "self-start bg-white/10 rounded-2xl rounded-tl-sm border border-white/5" : "self-end rounded-2xl rounded-tr-sm",
+                    msg.sender !== "user" && persona.output?.platform === "WhatsApp" && "bg-green-600/90",
+                    msg.sender !== "user" && persona.output?.platform === "SMS" && "bg-blue-600/90",
+                    msg.sender !== "user" && persona.output?.platform === "Instagram" && "bg-zinc-800/90 border border-white/10",
+                    msg.sender !== "user" && persona.output?.platform === "Email" && "bg-zinc-100 text-black w-full"
                   )}
                 >
-                  {msg}
+                  {msg.text}
                 </motion.div>
               ))}
-
-              {/* Typing indicator simulation while generating */}
-              <motion.div 
-                initial={{ opacity: 1 }}
-                animate={{ opacity: 0, display: "none" }}
-                transition={{ delay: 1.8, duration: 0.2 }}
-                className="self-end px-4 py-2 mt-1 bg-white/10 backdrop-blur-md rounded-full flex gap-1 items-center w-fit"
-              >
-                <motion.div className="w-1.5 h-1.5 bg-zinc-300 rounded-full" animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0 }} />
-                <motion.div className="w-1.5 h-1.5 bg-zinc-300 rounded-full" animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }} />
-                <motion.div className="w-1.5 h-1.5 bg-zinc-300 rounded-full" animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }} />
-              </motion.div>
             </motion.div>
           </AnimatePresence>
         </div>
-        
+
         {/* Action Bar */}
         <div className="p-3 bg-black border-t border-white/5 flex gap-2 w-full justify-between items-center z-20">
-           <div className="text-xs font-semibold text-zinc-400 uppercase">
-             Est. Reply Rate: <span className="text-blue-400">{persona.output.replyRate}%</span>
-           </div>
-           <button 
-             onClick={handleSend}
-             disabled={sendStatus !== "idle"}
-             className={cn(
-               "text-xs font-bold px-4 py-2 rounded shadow-lg transition-all duration-300 transform",
-               sendStatus === "idle" ? "bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.3)] hover:scale-105 active:scale-95 cursor-pointer hover:bg-zinc-200" :
-               sendStatus === "sending" ? "bg-zinc-800 text-zinc-400 cursor-wait border border-white/10" :
-               "bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)]"
-             )}
-           >
-              {sendStatus === "idle" ? "Approve & Send" : sendStatus === "sending" ? "Orchestrating..." : "Message Deployed ✓"}
-           </button>
+          <div className="text-xs font-semibold text-zinc-400 uppercase">
+            Est. Reply Rate: <span className="text-blue-400">{persona.output?.replyRate || 0}%</span>
+          </div>
+          <button
+            onClick={handleSend}
+            disabled={sendStatus !== "idle"}
+            className={cn(
+              "text-xs font-bold px-4 py-2 rounded shadow-lg transition-all duration-300 transform",
+              sendStatus === "idle" ? "bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.3)] hover:scale-105 active:scale-95 cursor-pointer hover:bg-zinc-200" :
+                sendStatus === "sending" ? "bg-zinc-800 text-zinc-400 cursor-wait border border-white/10" :
+                  "bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)]"
+            )}
+          >
+            {sendStatus === "idle" ? "Approve & Send" : sendStatus === "sending" ? "Orchestrating..." : "Message Deployed ✓"}
+          </button>
         </div>
       </div>
 
       <ExplainabilityDrawer persona={persona} />
 
       {/* Impact Panel */}
-      <motion.div 
+      <motion.div
         key={persona.id + "-impact"}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -182,15 +191,15 @@ export function MessageWorkspace({ persona }: { persona: Persona }) {
             <h3 className="text-xs font-bold text-white uppercase tracking-wider">Projected Output ROI</h3>
           </div>
         </div>
-        
+
         <div className="flex items-end justify-between">
           <div className="flex flex-col">
             <span className="text-3xl font-black text-emerald-400">+{persona.ai.expectedUplift}%</span>
             <span className="text-[10px] uppercase font-semibold text-zinc-400 line-through decoration-rose-500/50">Suppression Mode OFF</span>
           </div>
           <div className="text-right">
-             <div className="text-sm font-bold text-white mb-0.5">Retained User</div>
-             <div className="text-[10px] text-zinc-400">vs Control Group</div>
+            <div className="text-sm font-bold text-white mb-0.5">Retained User</div>
+            <div className="text-[10px] text-zinc-400">vs Control Group</div>
           </div>
         </div>
       </motion.div>

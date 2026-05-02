@@ -12,7 +12,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="flex h-screen overflow-hidden bg-[#050505]">
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-        {pathname === '/' && <CommandBar />}
+        <CommandBar />
 
         <main className="flex-1 overflow-y-auto overflow-x-hidden relative z-10 p-6 scroll-smooth">
           <AnimatePresence mode="wait">
